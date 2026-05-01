@@ -118,7 +118,7 @@ class ErrorResponse(BaseModel):
 class AppState:
     """Estado de la aplicación."""
     def __init__(self):
-        self.last_5_matches = None
+        self.historical_matches = None
         self.next_matchday = None
         self.standings = None
         self.trainer = None
@@ -126,7 +126,7 @@ class AppState:
         self.last_update = None
 
     def is_data_loaded(self) -> bool:
-        return self.last_5_matches is not None
+        return self.historical_matches is not None
 
     def is_model_trained(self) -> bool:
         return self.trainer is not None
@@ -184,7 +184,7 @@ async def load_data():
     """
     Carga datos de LaLiga desde API.
 
-    - Descarga últimas 5 jornadas
+    - Descarga últimos 20 partidos
     - Descarga próxima jornada
     - Obtiene clasificación actual
     """
@@ -196,7 +196,7 @@ async def load_data():
         if last_5 is None or len(last_5) == 0:
             raise HTTPException(status_code=400, detail="No se pudieron obtener datos")
 
-        state.last_5_matches = last_5
+        state.historical_matches = last_5
         state.next_matchday = next_matchday
         state.standings = standings
         state.last_update = datetime.now().isoformat()
@@ -219,12 +219,12 @@ async def load_data():
 
 @app.get("/data/history", tags=["Data"])
 async def get_history():
-    """Obtiene últimas 5 jornadas cargadas."""
-    if state.last_5_matches is None:
+    """Obtiene últimos 20 partidos cargadas."""
+    if state.historical_matches is None:
         raise HTTPException(status_code=400, detail="Primero carga datos con POST /data/load")
 
     matches = []
-    for _, row in state.last_5_matches.iterrows():
+    for _, row in state.historical_matches.iterrows():
         matches.append({
             "date": row["date"].isoformat() if hasattr(row["date"], "isoformat") else str(row["date"]),
             "home_team": row["home_team"],
@@ -263,7 +263,7 @@ async def get_next_matchday():
 @app.post("/model/train", response_model=TrainResponse, tags=["Model"])
 async def train_model():
     """
-    Entrena modelo ML con últimas 5 jornadas.
+    Entrena modelo ML con los datos históricos cargados.
 
     Requerido: Haber ejecutado POST /data/load primero
     """
@@ -276,7 +276,7 @@ async def train_model():
     try:
         logger.info("Entrenando modelo...")
 
-        trainer, metrics = train_complete_model(state.last_5_matches)
+        trainer, metrics = train_complete_model(state.historical_matches)
 
         state.trainer = trainer
         state.last_update = datetime.now().isoformat()
@@ -285,7 +285,7 @@ async def train_model():
             success=True,
             accuracy=float(metrics["accuracy"]),
             f1_score=float(metrics["f1_score"]),
-            total_matches=len(state.last_5_matches),
+            total_matches=len(state.historical_matches),
             message="Modelo entrenado correctamente",
         )
 
@@ -359,7 +359,7 @@ async def generate_predictions():
     try:
         logger.info("Generando predicciones...")
 
-        predictor = Predictor(state.trainer, state.last_5_matches)
+        predictor = Predictor(state.trainer, state.historical_matches)
         predictions = predictor.predict_matchday(state.next_matchday)
 
         state.predictions = predictions
@@ -444,7 +444,7 @@ async def generate_quiniela(strategy: str = "balanced"):
     try:
         logger.info(f"Generando quiniela con estrategia: {strategy}")
 
-        predictor = Predictor(state.trainer, state.last_5_matches)
+        predictor = Predictor(state.trainer, state.historical_matches)
         quiniela = predictor.generate_quiniela(state.predictions, strategy=strategy)
 
         bets = quiniela["bet"].tolist()
@@ -511,7 +511,7 @@ async def get_standings():
 @app.post("/reset", tags=["System"])
 async def reset():
     """Limpia estado de la aplicación."""
-    state.last_5_matches = None
+    state.historical_matches = None
     state.next_matchday = None
     state.standings = None
     state.trainer = None

@@ -115,8 +115,8 @@ class FeatureEngineer:
         match_date = match_row["date"]
 
         # Obtiene estadísticas
-        home_stats = self.get_team_stats_before_date(home_team, match_date, last_n=5)
-        away_stats = self.get_team_stats_before_date(away_team, match_date, last_n=5)
+        home_stats = self.get_team_stats_before_date(home_team, match_date, last_n=20)
+        away_stats = self.get_team_stats_before_date(away_team, match_date, last_n=20)
 
         # Crea features
         features = {

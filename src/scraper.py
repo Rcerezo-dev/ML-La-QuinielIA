@@ -100,6 +100,23 @@ class LaLigaScraper:
             logger.error(f"Error obteniendo partidos: {e}")
             return None
 
+    def get_last_n_matches(self, n: int = 20) -> Optional[pd.DataFrame]:
+        """Obtiene últimos n partidos disputados."""
+        try:
+            matches = self.get_matches(status="FINISHED")
+            if matches is None or len(matches) == 0:
+                return None
+
+            matches = matches.sort_values("date", ascending=False)
+            last_n = matches.head(n).sort_values("date")
+
+            logger.info(f"Últimos {n} partidos obtenidos")
+            return last_n
+
+        except Exception as e:
+            logger.error(f"Error obteniendo últimos {n} partidos: {e}")
+            return None
+
     def get_last_n_matchdays(self, n: int = 5) -> Optional[pd.DataFrame]:
         """Obtiene últimas n jornadas completas disputadas."""
         try:
@@ -172,21 +189,21 @@ class LaLigaScraper:
 def scrape_all_data() -> Tuple[Optional[pd.DataFrame], Optional[pd.DataFrame], Optional[pd.DataFrame]]:
     """
     Función principal para obtener todos los datos necesarios.
-    Retorna: (últimas 5 jornadas, próxima jornada, clasificación)
+    Retorna: (últimos 20 partidos, próxima jornada, clasificación)
     """
     scraper = LaLigaScraper()
 
     # Obtiene datos
-    last_5 = scraper.get_last_n_matchdays(n=5)
+    last_20 = scraper.get_last_n_matches(n=20)
     next_matchday = scraper.get_next_matchday()
     standings = scraper.get_standings()
 
     # Guarda
-    if last_5 is not None:
-        scraper.save_data(last_5, "last_5_matchdays.csv")
+    if last_20 is not None:
+        scraper.save_data(last_20, "last_20_matches.csv")
     if next_matchday is not None:
         scraper.save_data(next_matchday, "next_matchday.csv")
     if standings is not None:
         scraper.save_data(standings, "standings.csv")
 
-    return last_5, next_matchday, standings
+    return last_20, next_matchday, standings
