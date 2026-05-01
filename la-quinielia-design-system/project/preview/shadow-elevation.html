@@ -1,0 +1,50 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<link rel="stylesheet" href="../colors_and_type.css">
+<style>
+  body { background: var(--lq-bg-base); padding: 32px 28px; font-family: var(--lq-font-body); }
+  .grid { display: flex; flex-wrap: wrap; gap: 24px; }
+  .card { background: var(--lq-bg-surface); border: 1px solid var(--lq-border-default); display: flex; align-items: center; justify-content: center; width: 130px; height: 72px; }
+  .label { font-size: 11px; font-family: var(--lq-font-mono); color: var(--lq-text-muted); margin-top: 8px; text-align: center; }
+  .item { display: flex; flex-direction: column; align-items: center; }
+</style>
+</head>
+<body>
+  <div class="grid">
+    <div class="item">
+      <div class="card" style="border-radius:4px; box-shadow: none;">Flat</div>
+      <div class="label">radius-xs / none</div>
+    </div>
+    <div class="item">
+      <div class="card" style="border-radius:6px; box-shadow:var(--lq-shadow-sm);">sm</div>
+      <div class="label">radius-sm / shadow-sm</div>
+    </div>
+    <div class="item">
+      <div class="card" style="border-radius:10px; box-shadow:var(--lq-shadow-md);">md</div>
+      <div class="label">radius-md / shadow-md</div>
+    </div>
+    <div class="item">
+      <div class="card" style="border-radius:16px; box-shadow:var(--lq-shadow-lg);">lg</div>
+      <div class="label">radius-lg / shadow-lg</div>
+    </div>
+    <div class="item">
+      <div class="card" style="border-radius:24px; box-shadow:var(--lq-shadow-xl);">xl</div>
+      <div class="label">radius-xl / shadow-xl</div>
+    </div>
+    <div class="item">
+      <div class="card" style="border-radius:16px; box-shadow: var(--lq-shadow-glow); border-color: rgba(20,184,166,0.4);">Glow</div>
+      <div class="label">glow / active border</div>
+    </div>
+    <div class="item">
+      <div class="card" style="border-radius:16px; box-shadow: 0 8px 32px rgba(0,0,0,0.4), 0 0 0 1px rgba(20,184,166,0.15); border-color: rgba(20,184,166,0.2);">Hover</div>
+      <div class="label">card-hover shadow</div>
+    </div>
+    <div class="item">
+      <div class="card" style="border-radius:9999px; width:72px; height:72px; box-shadow:var(--lq-shadow-sm);">pill</div>
+      <div class="label">radius-full</div>
+    </div>
+  </div>
+</body>
+</html>

@@ -1,0 +1,66 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<link rel="stylesheet" href="../colors_and_type.css">
+<style>
+  body { background: var(--lq-bg-base); padding: 28px; font-family: var(--lq-font-body); }
+  .specimen { margin-bottom: 28px; display: flex; align-items: baseline; gap: 20px; border-bottom: 1px solid var(--lq-border-default); padding-bottom: 20px; }
+  .specimen:last-child { border-bottom: none; }
+  .spec-meta { width: 140px; flex-shrink: 0; }
+  .spec-name { font-size: 11px; font-weight: 700; letter-spacing: 0.1em; text-transform: uppercase; color: var(--lq-text-muted); }
+  .spec-detail { font-size: 11px; color: var(--lq-text-muted); font-family: var(--lq-font-mono); margin-top: 4px; line-height: 1.6; }
+</style>
+</head>
+<body>
+  <div class="specimen">
+    <div class="spec-meta">
+      <div class="spec-name">Display</div>
+      <div class="spec-detail">Space Grotesk<br>60px / Bold<br>−0.03em</div>
+    </div>
+    <div style="font-family: var(--lq-font-display); font-size: 52px; font-weight: 700; letter-spacing: -0.03em; line-height: 1; color: var(--lq-text-primary);">52%</div>
+  </div>
+  <div class="specimen">
+    <div class="spec-meta">
+      <div class="spec-name">H1</div>
+      <div class="spec-detail">Space Grotesk<br>48px / Bold<br>−0.03em</div>
+    </div>
+    <div style="font-family: var(--lq-font-display); font-size: 40px; font-weight: 700; letter-spacing: -0.02em; color: var(--lq-text-primary);">Próxima Jornada</div>
+  </div>
+  <div class="specimen">
+    <div class="spec-meta">
+      <div class="spec-name">H2</div>
+      <div class="spec-detail">Space Grotesk<br>30px / Semibold</div>
+    </div>
+    <div style="font-family: var(--lq-font-display); font-size: 28px; font-weight: 600; color: var(--lq-text-primary);">Predicciones</div>
+  </div>
+  <div class="specimen">
+    <div class="spec-meta">
+      <div class="spec-name">H3</div>
+      <div class="spec-detail">Space Grotesk<br>20px / Semibold</div>
+    </div>
+    <div style="font-family: var(--lq-font-display); font-size: 20px; font-weight: 600; color: var(--lq-text-primary);">Model Accuracy</div>
+  </div>
+  <div class="specimen">
+    <div class="spec-meta">
+      <div class="spec-name">Body</div>
+      <div class="spec-detail">Inter<br>15px / Regular<br>1.5 leading</div>
+    </div>
+    <div style="font-family: var(--lq-font-body); font-size: 15px; color: var(--lq-text-secondary); max-width: 380px; line-height: 1.5;">Motor de predicción de LaLiga basado en inteligencia artificial y análisis de datos históricos.</div>
+  </div>
+  <div class="specimen">
+    <div class="spec-meta">
+      <div class="spec-name">Label</div>
+      <div class="spec-detail">Inter<br>11px / SemiBold<br>+0.12em</div>
+    </div>
+    <div style="font-family: var(--lq-font-body); font-size: 11px; font-weight: 700; letter-spacing: 0.12em; text-transform: uppercase; color: var(--lq-text-muted);">Confianza del Modelo</div>
+  </div>
+  <div class="specimen">
+    <div class="spec-meta">
+      <div class="spec-name">Mono</div>
+      <div class="spec-detail">JetBrains Mono<br>13px</div>
+    </div>
+    <div style="font-family: var(--lq-font-mono); font-size: 13px; color: var(--lq-teal-400);">P(1): 0.652 · P(X): 0.198 · P(2): 0.150</div>
+  </div>
+</body>
+</html>

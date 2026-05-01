@@ -1,0 +1,96 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<link rel="stylesheet" href="../colors_and_type.css">
+<style>
+  body { background: var(--lq-bg-base); padding: 28px; font-family: var(--lq-font-body); }
+  .grid { display: flex; flex-wrap: wrap; gap: 16px; }
+
+  /* KPI Card */
+  .kpi-card {
+    background: var(--lq-bg-surface);
+    border: 1px solid var(--lq-border-default);
+    border-top: 3px solid var(--lq-color-primary);
+    border-radius: var(--lq-radius-lg);
+    padding: 20px;
+    width: 170px;
+    box-shadow: var(--lq-shadow-sm);
+  }
+  .kpi-card.gold { border-top-color: var(--lq-color-accent); }
+  .kpi-card.success { border-top-color: var(--lq-color-success); }
+  .kpi-card.info { border-top-color: var(--lq-blue-500); }
+  .kpi-label { font-size: 11px; font-weight: 600; letter-spacing: 0.08em; text-transform: uppercase; color: var(--lq-text-muted); margin-bottom: 10px; }
+  .kpi-value { font-family: var(--lq-font-display); font-size: 32px; font-weight: 700; letter-spacing: -0.02em; color: var(--lq-text-primary); line-height: 1; margin-bottom: 6px; }
+  .kpi-delta { font-size: 12px; color: var(--lq-color-success); display: flex; align-items: center; gap: 4px; }
+
+  /* Prediction card */
+  .pred-card {
+    background: var(--lq-bg-surface);
+    border: 1px solid var(--lq-border-default);
+    border-radius: var(--lq-radius-lg);
+    padding: 20px;
+    width: 280px;
+    box-shadow: var(--lq-shadow-sm);
+  }
+  .pred-match { font-size: 14px; font-weight: 600; color: var(--lq-text-primary); margin-bottom: 4px; }
+  .pred-sub { font-size: 12px; color: var(--lq-text-muted); margin-bottom: 14px; }
+  .prob-row { display: flex; gap: 8px; margin-bottom: 10px; }
+  .prob-btn { flex: 1; padding: 8px 4px; border-radius: 8px; text-align: center; border: 1px solid var(--lq-border-default); }
+  .prob-btn.active { background: rgba(20,184,166,0.12); border-color: rgba(20,184,166,0.4); }
+  .prob-label { font-size: 10px; font-weight: 700; letter-spacing: 0.06em; color: var(--lq-text-muted); text-transform: uppercase; }
+  .prob-val { font-family: var(--lq-font-display); font-size: 18px; font-weight: 700; color: var(--lq-text-primary); }
+  .prob-btn.active .prob-val { color: var(--lq-teal-400); }
+  .prog-track { height: 4px; background: rgba(255,255,255,0.06); border-radius: 2px; overflow: hidden; margin-top: 4px; }
+  .prog-fill  { height: 100%; border-radius: 2px; background: var(--lq-gradient-brand); }
+</style>
+</head>
+<body>
+  <div class="grid">
+    <div class="kpi-card">
+      <div class="kpi-label">Model Accuracy</div>
+      <div class="kpi-value">52<span style="font-size:18px">%</span></div>
+      <div class="kpi-delta">↑ +3% vs last run</div>
+    </div>
+    <div class="kpi-card gold">
+      <div class="kpi-label">Matches Predicted</div>
+      <div class="kpi-value">10</div>
+      <div class="kpi-delta" style="color:var(--lq-gold-400)">Jornada 28</div>
+    </div>
+    <div class="kpi-card success">
+      <div class="kpi-label">Confidence</div>
+      <div class="kpi-value">67<span style="font-size:18px">%</span></div>
+      <div class="kpi-delta">↑ High confidence</div>
+    </div>
+    <div class="kpi-card info">
+      <div class="kpi-label">Last Jornada Hits</div>
+      <div class="kpi-value">7<span style="font-size:18px">/10</span></div>
+      <div class="kpi-delta">↑ Above average</div>
+    </div>
+  </div>
+
+  <div style="margin-top:24px">
+    <div class="pred-card">
+      <div class="pred-match">Real Madrid vs Barcelona</div>
+      <div class="pred-sub">Jornada 28 · La Liga · Camp Nou</div>
+      <div class="prob-row">
+        <div class="prob-btn active">
+          <div class="prob-label">1</div>
+          <div class="prob-val">65%</div>
+          <div class="prog-track"><div class="prog-fill" style="width:65%"></div></div>
+        </div>
+        <div class="prob-btn">
+          <div class="prob-label">X</div>
+          <div class="prob-val">20%</div>
+          <div class="prog-track"><div class="prog-fill" style="width:20%; background:#94a3b8"></div></div>
+        </div>
+        <div class="prob-btn">
+          <div class="prob-label">2</div>
+          <div class="prob-val">15%</div>
+          <div class="prog-track"><div class="prog-fill" style="width:15%; background:#475569"></div></div>
+        </div>
+      </div>
+    </div>
+  </div>
+</body>
+</html>

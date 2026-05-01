@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<link rel="stylesheet" href="../colors_and_type.css">
+<style>
+  body { background: var(--lq-bg-base); padding: 24px; font-family: var(--lq-font-body); }
+  .grid { display: flex; flex-wrap: wrap; gap: 12px; }
+  .swatch { border-radius: var(--lq-radius-md); overflow: hidden; width: 120px; }
+  .swatch-color { height: 64px; width: 100%; }
+  .swatch-info { padding: 8px; background: var(--lq-bg-surface); border: 1px solid var(--lq-border-default); border-top: none; border-radius: 0 0 var(--lq-radius-md) var(--lq-radius-md); }
+  .swatch-name { font-size: 12px; font-weight: 600; color: var(--lq-text-primary); }
+  .swatch-hex  { font-size: 11px; color: var(--lq-text-muted); font-family: var(--lq-font-mono); }
+  .row-label { font-size: 11px; font-weight: 600; letter-spacing: 0.1em; text-transform: uppercase; color: var(--lq-text-muted); margin: 20px 0 8px; }
+  .grad-bar { height: 48px; border-radius: var(--lq-radius-md); background: var(--lq-gradient-brand); margin-bottom: 8px; display: flex; align-items: center; padding: 0 16px; }
+  .grad-label { font-size: 12px; font-weight: 600; color: white; }
+</style>
+</head>
+<body>
+  <div class="row-label">Primary — Teal</div>
+  <div class="grid">
+    <div class="swatch"><div class="swatch-color" style="background:#ccfbf1"></div><div class="swatch-info"><div class="swatch-name">Teal 100</div><div class="swatch-hex">#ccfbf1</div></div></div>
+    <div class="swatch"><div class="swatch-color" style="background:#5eead4"></div><div class="swatch-info"><div class="swatch-name">Teal 300</div><div class="swatch-hex">#5eead4</div></div></div>
+    <div class="swatch"><div class="swatch-color" style="background:#2dd4bf"></div><div class="swatch-info"><div class="swatch-name">Teal 400</div><div class="swatch-hex">#2dd4bf</div></div></div>
+    <div class="swatch"><div class="swatch-color" style="background:#14b8a6"></div><div class="swatch-info"><div class="swatch-name">Teal 500 ★</div><div class="swatch-hex">#14b8a6</div></div></div>
+    <div class="swatch"><div class="swatch-color" style="background:#0d9488"></div><div class="swatch-info"><div class="swatch-name">Teal 600</div><div class="swatch-hex">#0d9488</div></div></div>
+    <div class="swatch"><div class="swatch-color" style="background:#0f766e"></div><div class="swatch-info"><div class="swatch-name">Teal 700</div><div class="swatch-hex">#0f766e</div></div></div>
+  </div>
+
+  <div class="row-label">Accent — Gold</div>
+  <div class="grid">
+    <div class="swatch"><div class="swatch-color" style="background:#fcd34d"></div><div class="swatch-info"><div class="swatch-name">Gold 300</div><div class="swatch-hex">#fcd34d</div></div></div>
+    <div class="swatch"><div class="swatch-color" style="background:#fbbf24"></div><div class="swatch-info"><div class="swatch-name">Gold 400</div><div class="swatch-hex">#fbbf24</div></div></div>
+    <div class="swatch"><div class="swatch-color" style="background:#f59e0b"></div><div class="swatch-info"><div class="swatch-name">Gold 500 ★</div><div class="swatch-hex">#f59e0b</div></div></div>
+    <div class="swatch"><div class="swatch-color" style="background:#d97706"></div><div class="swatch-info"><div class="swatch-name">Gold 600</div><div class="swatch-hex">#d97706</div></div></div>
+  </div>
+
+  <div class="row-label">Brand Gradient</div>
+  <div class="grad-bar"><span class="grad-label">linear-gradient(135deg, #14B8A6 → #3B82F6)</span></div>
+</body>
+</html>

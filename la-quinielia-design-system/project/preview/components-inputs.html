@@ -1,0 +1,83 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<link rel="stylesheet" href="../colors_and_type.css">
+<style>
+  body { background: var(--lq-bg-base); padding: 28px; font-family: var(--lq-font-body); }
+  .section-label { font-size: 11px; font-weight: 700; letter-spacing: 0.1em; text-transform: uppercase; color: var(--lq-text-muted); margin-bottom: 12px; }
+  .field-group { display: flex; flex-direction: column; gap: 12px; max-width: 340px; margin-bottom: 24px; }
+
+  .input-wrap { display: flex; flex-direction: column; gap: 5px; }
+  .input-label { font-size: 12px; font-weight: 600; color: var(--lq-text-secondary); }
+  .input {
+    background: rgba(255,255,255,0.04); border: 1px solid rgba(255,255,255,0.1);
+    border-radius: 10px; padding: 10px 14px; font-family: var(--lq-font-body);
+    font-size: 14px; color: var(--lq-text-primary); outline: none; width: 100%;
+  }
+  .input::placeholder { color: var(--lq-text-muted); }
+  .input:focus { border-color: rgba(20,184,166,0.5); box-shadow: 0 0 0 3px rgba(20,184,166,0.12); }
+  .input-focused { border-color: rgba(20,184,166,0.5) !important; box-shadow: 0 0 0 3px rgba(20,184,166,0.12) !important; }
+  .input-error { border-color: rgba(239,68,68,0.4) !important; }
+  .input-hint { font-size: 11px; color: var(--lq-text-muted); }
+  .input-hint.error { color: #f87171; }
+
+  /* Select */
+  .select {
+    background: rgba(255,255,255,0.04); border: 1px solid rgba(255,255,255,0.1);
+    border-radius: 10px; padding: 10px 14px; font-family: var(--lq-font-body);
+    font-size: 14px; color: var(--lq-text-primary); outline: none; width: 100%;
+    appearance: none; cursor: pointer;
+  }
+
+  /* Tab selector */
+  .tabs { display: flex; background: rgba(255,255,255,0.04); border-radius: 10px; padding: 4px; gap: 2px; max-width: 320px; }
+  .tab { flex: 1; padding: 8px 12px; border-radius: 7px; font-size: 13px; font-weight: 500; color: var(--lq-text-muted); text-align: center; cursor: pointer; transition: all 150ms; }
+  .tab.active { background: var(--lq-bg-elevated); color: var(--lq-text-primary); box-shadow: var(--lq-shadow-sm); }
+
+  /* Toggle */
+  .toggle-row { display: flex; align-items: center; gap: 12px; }
+  .toggle-track { width: 44px; height: 24px; border-radius: 12px; background: rgba(255,255,255,0.1); position: relative; cursor: pointer; }
+  .toggle-track.on { background: var(--lq-color-primary); }
+  .toggle-thumb { width: 18px; height: 18px; border-radius: 9px; background: white; position: absolute; top: 3px; left: 3px; transition: left 150ms; }
+  .toggle-track.on .toggle-thumb { left: 23px; }
+  .toggle-label { font-size: 13px; color: var(--lq-text-primary); }
+</style>
+</head>
+<body>
+  <div class="section-label">Text Inputs</div>
+  <div class="field-group">
+    <div class="input-wrap">
+      <div class="input-label">Liga</div>
+      <input class="input" placeholder="LaLiga (PD)">
+      <div class="input-hint">Código de la liga en football-data.org</div>
+    </div>
+    <div class="input-wrap">
+      <div class="input-label">API Key <span style="color:#ef4444">*</span></div>
+      <input class="input input-focused" value="••••••••••••••••" type="password">
+    </div>
+    <div class="input-wrap">
+      <div class="input-label">Jornadas históricas</div>
+      <input class="input input-error" value="abc">
+      <div class="input-hint error">Debe ser un número entre 1 y 10</div>
+    </div>
+  </div>
+
+  <div class="section-label">Selector — Estrategia</div>
+  <div class="tabs" style="margin-bottom:20px">
+    <div class="tab active">Conservadora</div>
+    <div class="tab">Arriesgada</div>
+    <div class="tab">Segura</div>
+  </div>
+
+  <div class="section-label">Toggle</div>
+  <div class="toggle-row">
+    <div class="toggle-track on"><div class="toggle-thumb"></div></div>
+    <div class="toggle-label">Modo automático</div>
+  </div>
+  <div class="toggle-row" style="margin-top:10px">
+    <div class="toggle-track"><div class="toggle-thumb"></div></div>
+    <div class="toggle-label" style="color:var(--lq-text-muted)">Exportar CSV</div>
+  </div>
+</body>
+</html>

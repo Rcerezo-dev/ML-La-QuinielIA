@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<link rel="stylesheet" href="../colors_and_type.css">
+<style>
+  body { background: #1a2333; padding: 32px; font-family: var(--lq-font-body); display: flex; flex-direction: column; align-items: center; gap: 32px; }
+  .logo-dark { background: #0f172a; padding: 24px 32px; border-radius: 16px; border: 1px solid rgba(255,255,255,0.06); }
+  .logo-light { background: #f8fafc; padding: 24px 32px; border-radius: 16px; border: 1px solid rgba(0,0,0,0.08); }
+  .favicon-row { display: flex; gap: 16px; align-items: center; }
+  .favicon-dark { background: #0f172a; padding: 12px; border-radius: 10px; }
+  .favicon-light { background: #f8fafc; padding: 12px; border-radius: 10px; border: 1px solid rgba(0,0,0,0.08); }
+  .size-label { font-size: 11px; color: var(--lq-text-muted); text-align: center; margin-top: 6px; }
+  .icon-item { display: flex; flex-direction: column; align-items: center; }
+</style>
+</head>
+<body>
+  <div>
+    <div class="logo-dark">
+      <img src="../assets/logo.svg" width="240" height="56" alt="La QuinielIA logo dark">
+    </div>
+    <div class="size-label">Primary logo — dark background</div>
+  </div>
+  <div>
+    <div class="logo-light">
+      <img src="../assets/logo-light.svg" width="240" height="56" alt="La QuinielIA logo light">
+    </div>
+    <div class="size-label">Logo — light background</div>
+  </div>
+  <div class="favicon-row">
+    <div class="icon-item">
+      <div class="favicon-dark"><img src="../assets/favicon.svg" width="48" height="48"></div>
+      <div class="size-label">48px dark</div>
+    </div>
+    <div class="icon-item">
+      <div class="favicon-dark"><img src="../assets/favicon.svg" width="32" height="32"></div>
+      <div class="size-label">32px</div>
+    </div>
+    <div class="icon-item">
+      <div class="favicon-dark"><img src="../assets/favicon.svg" width="16" height="16"></div>
+      <div class="size-label">16px favicon</div>
+    </div>
+    <div class="icon-item">
+      <div class="favicon-light"><img src="../assets/favicon.svg" width="32" height="32"></div>
+      <div class="size-label">32px light</div>
+    </div>
+  </div>
+</body>
+</html>

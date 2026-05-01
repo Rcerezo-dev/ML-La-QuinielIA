@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<link rel="stylesheet" href="../colors_and_type.css">
+<script src="https://unpkg.com/lucide@latest/dist/umd/lucide.min.js"></script>
+<style>
+  body { background: var(--lq-bg-base); padding: 24px; font-family: var(--lq-font-body); }
+  .grid { display: flex; flex-wrap: wrap; gap: 8px; }
+  .icon-item {
+    display: flex; flex-direction: column; align-items: center; gap: 6px;
+    background: var(--lq-bg-surface); border: 1px solid var(--lq-border-default);
+    border-radius: var(--lq-radius-md); padding: 14px 10px; width: 88px;
+  }
+  .icon-item svg { color: var(--lq-text-secondary); }
+  .icon-item:hover svg { color: var(--lq-color-primary); }
+  .icon-label { font-size: 10px; color: var(--lq-text-muted); text-align: center; line-height: 1.3; }
+  .section-label { font-size: 11px; font-weight: 700; letter-spacing: 0.1em; text-transform: uppercase; color: var(--lq-text-muted); margin: 20px 0 10px; }
+</style>
+</head>
+<body>
+  <div class="section-label">Navigation</div>
+  <div class="grid">
+    <div class="icon-item"><i data-lucide="layout-dashboard" width="22" height="22"></i><div class="icon-label">Dashboard</div></div>
+    <div class="icon-item"><i data-lucide="target" width="22" height="22"></i><div class="icon-label">Predictions</div></div>
+    <div class="icon-item"><i data-lucide="history" width="22" height="22"></i><div class="icon-label">History</div></div>
+    <div class="icon-item"><i data-lucide="settings" width="22" height="22"></i><div class="icon-label">Settings</div></div>
+    <div class="icon-item"><i data-lucide="bar-chart-2" width="22" height="22"></i><div class="icon-label">Analytics</div></div>
+  </div>
+  <div class="section-label">Actions</div>
+  <div class="grid">
+    <div class="icon-item"><i data-lucide="download-cloud" width="22" height="22"></i><div class="icon-label">Load Data</div></div>
+    <div class="icon-item"><i data-lucide="cpu" width="22" height="22"></i><div class="icon-label">Train Model</div></div>
+    <div class="icon-item"><i data-lucide="sparkles" width="22" height="22"></i><div class="icon-label">Generate</div></div>
+    <div class="icon-item"><i data-lucide="list-checks" width="22" height="22"></i><div class="icon-label">Quiniela</div></div>
+    <div class="icon-item"><i data-lucide="refresh-cw" width="22" height="22"></i><div class="icon-label">Retrain</div></div>
+  </div>
+  <div class="section-label">Data / Status</div>
+  <div class="grid">
+    <div class="icon-item"><i data-lucide="percent" width="22" height="22" style="color:#14b8a6"></i><div class="icon-label">Accuracy</div></div>
+    <div class="icon-item"><i data-lucide="shield-check" width="22" height="22" style="color:#22c55e"></i><div class="icon-label">Confidence</div></div>
+    <div class="icon-item"><i data-lucide="check-circle" width="22" height="22" style="color:#22c55e"></i><div class="icon-label">Correct</div></div>
+    <div class="icon-item"><i data-lucide="x-circle" width="22" height="22" style="color:#ef4444"></i><div class="icon-label">Wrong</div></div>
+    <div class="icon-item"><i data-lucide="alert-triangle" width="22" height="22" style="color:#f59e0b"></i><div class="icon-label">Warning</div></div>
+    <div class="icon-item"><i data-lucide="trending-up" width="22" height="22" style="color:#22c55e"></i><div class="icon-label">Trend Up</div></div>
+    <div class="icon-item"><i data-lucide="trending-down" width="22" height="22" style="color:#ef4444"></i><div class="icon-label">Trend Down</div></div>
+  </div>
+  <div class="section-label">Football Context</div>
+  <div class="grid">
+    <div class="icon-item"><i data-lucide="home" width="22" height="22"></i><div class="icon-label">Local (1)</div></div>
+    <div class="icon-item"><i data-lucide="equal" width="22" height="22"></i><div class="icon-label">Draw (X)</div></div>
+    <div class="icon-item"><i data-lucide="plane" width="22" height="22"></i><div class="icon-label">Away (2)</div></div>
+    <div class="icon-item"><i data-lucide="trophy" width="22" height="22" style="color:#f59e0b"></i><div class="icon-label">LaLiga</div></div>
+    <div class="icon-item"><i data-lucide="calendar" width="22" height="22"></i><div class="icon-label">Jornada</div></div>
+  </div>
+  <script>lucide.createIcons();</script>
+</body>
+</html>

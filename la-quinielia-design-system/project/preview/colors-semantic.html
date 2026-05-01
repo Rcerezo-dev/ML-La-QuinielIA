@@ -1,0 +1,67 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<link rel="stylesheet" href="../colors_and_type.css">
+<style>
+  body { background: var(--lq-bg-base); padding: 24px; font-family: var(--lq-font-body); }
+  .row { display: flex; align-items: center; gap: 16px; padding: 12px 16px; border-radius: var(--lq-radius-md); margin-bottom: 8px; }
+  .dot { width: 36px; height: 36px; border-radius: 50%; flex-shrink: 0; }
+  .info { flex: 1; }
+  .label { font-size: 13px; font-weight: 600; color: var(--lq-text-primary); }
+  .desc  { font-size: 11px; color: var(--lq-text-muted); margin-top: 2px; }
+  .hex   { font-size: 11px; font-family: var(--lq-font-mono); color: var(--lq-text-secondary); }
+  .badge-preview { display: flex; gap: 8px; }
+</style>
+</head>
+<body>
+  <div class="row" style="background: rgba(20,184,166,0.07);">
+    <div class="dot" style="background:#14b8a6"></div>
+    <div class="info">
+      <div class="label">Primary / Teal</div>
+      <div class="desc">Actions, links, active states, progress</div>
+    </div>
+    <div class="hex">#14B8A6</div>
+  </div>
+  <div class="row" style="background: rgba(245,158,11,0.07);">
+    <div class="dot" style="background:#f59e0b"></div>
+    <div class="info">
+      <div class="label">Accent / Gold</div>
+      <div class="desc">Confidence scores, highlights, awards</div>
+    </div>
+    <div class="hex">#F59E0B</div>
+  </div>
+  <div class="row" style="background: rgba(34,197,94,0.07);">
+    <div class="dot" style="background:#22c55e"></div>
+    <div class="info">
+      <div class="label">Success</div>
+      <div class="desc">Correct picks, wins, positive delta</div>
+    </div>
+    <div class="hex">#22C55E</div>
+  </div>
+  <div class="row" style="background: rgba(239,68,68,0.07);">
+    <div class="dot" style="background:#ef4444"></div>
+    <div class="info">
+      <div class="label">Danger</div>
+      <div class="desc">Wrong picks, losses, errors</div>
+    </div>
+    <div class="hex">#EF4444</div>
+  </div>
+  <div class="row" style="background: rgba(59,130,246,0.07);">
+    <div class="dot" style="background:#3b82f6"></div>
+    <div class="info">
+      <div class="label">Info / Blue</div>
+      <div class="desc">Gradient end, charts, informational</div>
+    </div>
+    <div class="hex">#3B82F6</div>
+  </div>
+  <div class="row" style="background: rgba(255,255,255,0.03);">
+    <div class="dot" style="background:#1e293b; border: 1px solid rgba(255,255,255,0.1)"></div>
+    <div class="info">
+      <div class="label">Surface</div>
+      <div class="desc">Card backgrounds, panels</div>
+    </div>
+    <div class="hex">#1E293B</div>
+  </div>
+</body>
+</html>

@@ -1,0 +1,27 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<link rel="stylesheet" href="../colors_and_type.css">
+<style>
+  body { background: var(--lq-bg-base); padding: 28px; font-family: var(--lq-font-body); }
+  .row { display: flex; align-items: center; gap: 16px; margin-bottom: 16px; }
+  .size-label { width: 52px; font-size: 11px; font-family: var(--lq-font-mono); color: var(--lq-text-muted); flex-shrink: 0; }
+  .bar-track { flex: 1; height: 2px; background: var(--lq-border-default); border-radius: 2px; position: relative; }
+  .bar-fill  { height: 100%; border-radius: 2px; background: var(--lq-gradient-brand); }
+  .sample { font-family: var(--lq-font-display); font-weight: 700; color: var(--lq-text-primary); line-height: 1; }
+</style>
+</head>
+<body>
+  <div class="row"><div class="size-label">60px</div><div class="sample" style="font-size:52px; letter-spacing:-0.03em">Aa</div></div>
+  <div class="row"><div class="size-label">48px</div><div class="sample" style="font-size:42px; letter-spacing:-0.02em">Aa</div></div>
+  <div class="row"><div class="size-label">38px</div><div class="sample" style="font-size:34px">Aa</div></div>
+  <div class="row"><div class="size-label">30px</div><div class="sample" style="font-size:27px">Aa</div></div>
+  <div class="row"><div class="size-label">24px</div><div class="sample" style="font-size:22px; font-weight:600">Aa</div></div>
+  <div class="row"><div class="size-label">20px</div><div class="sample" style="font-size:18px; font-weight:600">Aa</div></div>
+  <div class="row"><div class="size-label">17px</div><div class="sample" style="font-size:16px; font-weight:500; font-family: var(--lq-font-body)">Aa</div></div>
+  <div class="row"><div class="size-label">15px</div><div class="sample" style="font-size:14px; font-weight:400; font-family: var(--lq-font-body)">Aa</div></div>
+  <div class="row"><div class="size-label">13px</div><div class="sample" style="font-size:12px; font-weight:400; font-family: var(--lq-font-body); color: var(--lq-text-secondary)">Aa</div></div>
+  <div class="row"><div class="size-label">11px</div><div class="sample" style="font-size:10px; font-weight:700; font-family: var(--lq-font-body); letter-spacing:0.1em; text-transform:uppercase; color:var(--lq-text-muted)">LABEL</div></div>
+</body>
+</html>

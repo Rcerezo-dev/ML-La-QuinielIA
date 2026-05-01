@@ -1,0 +1,798 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>La QuinielIA — Dashboard</title>
+<link rel="icon" href="../../assets/favicon.svg" type="image/svg+xml">
+<link rel="stylesheet" href="../../colors_and_type.css">
+<script src="https://unpkg.com/react@18.3.1/umd/react.development.js" integrity="sha384-hD6/rw4ppMLGNu3tX5cjIb+uRZ7UkRJ6BPkLpg4hAu/6onKUg4lLsHAs9EBPT82L" crossorigin="anonymous"></script>
+<script src="https://unpkg.com/react-dom@18.3.1/umd/react-dom.development.js" integrity="sha384-u6aeetuaXnQ38mYT8rp6sbXaQe3NL9t+IBXmnYxwkUI2Hw4bsp2Wvmx4yRQF1uAm" crossorigin="anonymous"></script>
+<script src="https://unpkg.com/@babel/standalone@7.29.0/babel.min.js" integrity="sha384-m08KidiNqLdpJqLq95G/LEi8Qvjl/xUYll3QILypMoQ65QorJ9Lvtp2RXYGBFj1y" crossorigin="anonymous"></script>
+<script src="https://unpkg.com/lucide@latest/dist/umd/lucide.min.js"></script>
+<style>
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  html { font-size: 16px; -webkit-font-smoothing: antialiased; }
+  body { background: #0f172a; color: #f1f5f9; font-family: 'Inter', sans-serif; min-height: 100vh; }
+
+  /* Subtle background grid */
+  body::before {
+    content: '';
+    position: fixed; inset: 0;
+    background-image:
+      linear-gradient(rgba(20,184,166,0.03) 1px, transparent 1px),
+      linear-gradient(90deg, rgba(20,184,166,0.03) 1px, transparent 1px);
+    background-size: 40px 40px;
+    pointer-events: none; z-index: 0;
+  }
+
+  #root { position: relative; z-index: 1; }
+
+  /* Scrollbar */
+  ::-webkit-scrollbar { width: 6px; height: 6px; }
+  ::-webkit-scrollbar-track { background: transparent; }
+  ::-webkit-scrollbar-thumb { background: rgba(255,255,255,0.1); border-radius: 3px; }
+  ::-webkit-scrollbar-thumb:hover { background: rgba(20,184,166,0.4); }
+
+  /* Loading pulse */
+  @keyframes pulse { 0%,100%{opacity:1} 50%{opacity:0.4} }
+  .pulse { animation: pulse 1.5s ease-in-out infinite; }
+
+  /* Status indicator blink */
+  @keyframes blink { 0%,100%{opacity:1} 50%{opacity:0.3} }
+  .blink { animation: blink 2s ease-in-out infinite; }
+
+  /* Slide in */
+  @keyframes slideUp { from{opacity:0;transform:translateY(12px)} to{opacity:1;transform:translateY(0)} }
+  .slide-up { animation: slideUp 300ms cubic-bezier(0.16,1,0.3,1) both; }
+</style>
+</head>
+<body>
+<div id="root"></div>
+
+<script type="text/babel" src="Header.jsx"></script>
+<script type="text/babel" src="KPICards.jsx"></script>
+<script type="text/babel" src="PredictionsTable.jsx"></script>
+<script type="text/babel" src="QuinielaSelector.jsx"></script>
+<script type="text/babel" src="ModelInsights.jsx"></script>
+
+<script type="text/babel">
+// ──────────────────────────────────────
+//  RESULTS SCREEN
+// ──────────────────────────────────────
+const RESULTS_DATA = [
+  {
+    jornada: 27,
+    date: '27 Abr 2025',
+    matches: [
+      { home: 'Real Madrid',     away: 'Cádiz CF',      hg: 3, ag: 0, pred: '1', result: '1' },
+      { home: 'Atlético Madrid', away: 'Granada CF',    hg: 2, ag: 1, pred: '1', result: '1' },
+      { home: 'FC Barcelona',    away: 'Valencia CF',   hg: 4, ag: 2, pred: '1', result: '1' },
+      { home: 'Betis',           away: 'Osasuna',       hg: 1, ag: 1, pred: 'X', result: 'X' },
+      { home: 'Athletic Club',   away: 'Getafe CF',     hg: 2, ag: 0, pred: '1', result: '1' },
+      { home: 'Villarreal CF',   away: 'Sevilla FC',    hg: 0, ag: 1, pred: 'X', result: '2' },
+      { home: 'Real Sociedad',   away: 'Girona FC',     hg: 1, ag: 0, pred: '1', result: '1' },
+      { home: 'Rayo Vallecano',  away: 'Las Palmas',    hg: 1, ag: 0, pred: '1', result: '1' },
+      { home: 'Mallorca',        away: 'Alavés',        hg: 1, ag: 1, pred: '1', result: 'X' },
+      { home: 'Celta Vigo',      away: 'Espanyol',      hg: 3, ag: 1, pred: 'X', result: '1' },
+    ],
+  },
+  {
+    jornada: 26,
+    date: '20 Abr 2025',
+    matches: [
+      { home: 'FC Barcelona',    away: 'Real Madrid',   hg: 3, ag: 2, pred: '1', result: '1' },
+      { home: 'Sevilla FC',      away: 'Atlético',      hg: 0, ag: 2, pred: '1', result: '2' },
+      { home: 'Valencia CF',     away: 'Betis',         hg: 1, ag: 1, pred: '2', result: 'X' },
+      { home: 'Osasuna',         away: 'Athletic',      hg: 0, ag: 1, pred: '1', result: '2' },
+      { home: 'Girona FC',       away: 'R. Sociedad',   hg: 2, ag: 0, pred: '1', result: '1' },
+      { home: 'Getafe CF',       away: 'Villarreal',    hg: 0, ag: 0, pred: 'X', result: 'X' },
+      { home: 'Las Palmas',      away: 'Rayo Vallecano',hg: 1, ag: 2, pred: '1', result: '2' },
+      { home: 'Alavés',          away: 'Mallorca',      hg: 2, ag: 1, pred: 'X', result: '1' },
+      { home: 'Espanyol',        away: 'Celta Vigo',    hg: 1, ag: 1, pred: 'X', result: 'X' },
+      { home: 'Cádiz CF',        away: 'Granada CF',    hg: 2, ag: 0, pred: '1', result: '1' },
+    ],
+  },
+];
+
+const ResultBadge = ({ result }) => {
+  const colors = {
+    '1': { bg: 'rgba(20,184,166,0.15)',  color: '#2dd4bf', border: 'rgba(20,184,166,0.3)' },
+    'X': { bg: 'rgba(245,158,11,0.15)',  color: '#fbbf24', border: 'rgba(245,158,11,0.3)' },
+    '2': { bg: 'rgba(59,130,246,0.15)',  color: '#60a5fa', border: 'rgba(59,130,246,0.3)' },
+  };
+  const c = colors[result] || colors['X'];
+  return (
+    <span style={{
+      display: 'inline-flex', alignItems: 'center', justifyContent: 'center',
+      width: 28, height: 28, borderRadius: 6,
+      background: c.bg, color: c.color, border: `1px solid ${c.border}`,
+      fontFamily: "'Space Grotesk',sans-serif", fontSize: 13, fontWeight: 700,
+    }}>{result}</span>
+  );
+};
+
+const HitIcon = ({ hit }) => (
+  hit
+    ? <span style={{ display: 'inline-flex', alignItems: 'center', gap: 4, fontSize: 12, fontWeight: 600, color: '#4ade80' }}>
+        <i data-lucide="check-circle" width="14" height="14"></i> Acierto
+      </span>
+    : <span style={{ display: 'inline-flex', alignItems: 'center', gap: 4, fontSize: 12, fontWeight: 600, color: '#f87171' }}>
+        <i data-lucide="x-circle" width="14" height="14"></i> Fallo
+      </span>
+);
+
+const JornadaResultCard = ({ data, defaultOpen }) => {
+  const [open, setOpen] = React.useState(defaultOpen || false);
+  const hits = data.matches.filter(m => m.pred === m.result).length;
+  const total = data.matches.length;
+  const accuracy = Math.round((hits / total) * 100);
+  const accColor = accuracy >= 60 ? '#4ade80' : accuracy >= 50 ? '#14B8A6' : '#f59e0b';
+
+  return (
+    <div style={{
+      background: '#1E293B', border: '1px solid rgba(255,255,255,0.06)',
+      borderRadius: 16, overflow: 'hidden', marginBottom: 12,
+      boxShadow: '0 1px 3px rgba(0,0,0,0.3)',
+    }}>
+      {/* Header row — clickable */}
+      <div
+        onClick={() => setOpen(o => !o)}
+        style={{
+          display: 'flex', alignItems: 'center', justifyContent: 'space-between',
+          padding: '16px 24px', cursor: 'pointer',
+          background: open ? 'rgba(20,184,166,0.04)' : 'transparent',
+          borderBottom: open ? '1px solid rgba(255,255,255,0.06)' : 'none',
+          transition: 'background 150ms',
+        }}
+      >
+        <div style={{ display: 'flex', alignItems: 'center', gap: 16 }}>
+          <div>
+            <div style={{ fontFamily: "'Space Grotesk',sans-serif", fontSize: 16, fontWeight: 700, color: '#f1f5f9' }}>
+              Jornada {data.jornada}
+            </div>
+            <div style={{ fontSize: 12, color: '#64748b', marginTop: 2, fontFamily: "'Inter',sans-serif" }}>{data.date} · LaLiga</div>
+          </div>
+          {/* Accuracy pill */}
+          <div style={{
+            padding: '4px 12px', borderRadius: 9999,
+            background: accColor + '18', border: `1px solid ${accColor}40`,
+            fontFamily: "'Space Grotesk',sans-serif", fontSize: 13, fontWeight: 700, color: accColor,
+          }}>{accuracy}% accuracy</div>
+        </div>
+        <div style={{ display: 'flex', alignItems: 'center', gap: 20 }}>
+          {/* Mini stats */}
+          <div style={{ display: 'flex', gap: 16 }}>
+            <div style={{ textAlign: 'center' }}>
+              <div style={{ fontFamily: "'Space Grotesk',sans-serif", fontSize: 18, fontWeight: 700, color: '#4ade80' }}>{hits}</div>
+              <div style={{ fontSize: 10, color: '#64748b', fontFamily: "'Inter',sans-serif", letterSpacing: '0.06em', textTransform: 'uppercase' }}>Aciertos</div>
+            </div>
+            <div style={{ textAlign: 'center' }}>
+              <div style={{ fontFamily: "'Space Grotesk',sans-serif", fontSize: 18, fontWeight: 700, color: '#f87171' }}>{total - hits}</div>
+              <div style={{ fontSize: 10, color: '#64748b', fontFamily: "'Inter',sans-serif", letterSpacing: '0.06em', textTransform: 'uppercase' }}>Fallos</div>
+            </div>
+          </div>
+          {/* Chevron */}
+          <div style={{ color: '#64748b', transition: 'transform 200ms', transform: open ? 'rotate(180deg)' : 'rotate(0deg)' }}>
+            <i data-lucide="chevron-down" width="18" height="18"></i>
+          </div>
+        </div>
+      </div>
+
+      {/* Expandable match list */}
+      {open && (
+        <div>
+          {/* Column headers */}
+          <div style={{
+            display: 'grid', gridTemplateColumns: '1fr 72px 72px 72px 80px',
+            gap: 0, padding: '8px 24px',
+            background: 'rgba(20,184,166,0.03)',
+            borderBottom: '1px solid rgba(255,255,255,0.04)',
+          }}>
+            {['Partido', 'Resultado', 'Pred.', 'Real', ''].map((h, i) => (
+              <div key={i} style={{ fontSize: 10, fontWeight: 700, letterSpacing: '0.1em', textTransform: 'uppercase', color: '#475569', fontFamily: "'Inter',sans-serif", textAlign: i > 0 ? 'center' : 'left' }}>{h}</div>
+            ))}
+          </div>
+
+          {data.matches.map((m, i) => {
+            const hit = m.pred === m.result;
+            return (
+              <div
+                key={i}
+                style={{
+                  display: 'grid', gridTemplateColumns: '1fr 72px 72px 72px 80px',
+                  gap: 0, padding: '11px 24px', alignItems: 'center',
+                  borderBottom: i < data.matches.length - 1 ? '1px solid rgba(255,255,255,0.03)' : 'none',
+                  background: hit
+                    ? 'rgba(34,197,94,0.025)'
+                    : 'rgba(239,68,68,0.025)',
+                  transition: 'background 100ms',
+                }}
+              >
+                {/* Match name */}
+                <div>
+                  <span style={{ fontSize: 13, fontWeight: 600, color: '#f1f5f9', fontFamily: "'Inter',sans-serif" }}>
+                    {m.home}
+                  </span>
+                  <span style={{ fontSize: 12, color: '#475569', fontFamily: "'Inter',sans-serif", margin: '0 6px' }}>vs</span>
+                  <span style={{ fontSize: 13, fontWeight: 600, color: '#f1f5f9', fontFamily: "'Inter',sans-serif" }}>
+                    {m.away}
+                  </span>
+                </div>
+
+                {/* Score */}
+                <div style={{ textAlign: 'center' }}>
+                  <span style={{
+                    fontFamily: "'Space Grotesk',sans-serif", fontSize: 15, fontWeight: 700,
+                    color: '#f1f5f9', letterSpacing: '0.04em',
+                  }}>
+                    {m.hg}–{m.ag}
+                  </span>
+                </div>
+
+                {/* Predicción */}
+                <div style={{ display: 'flex', justifyContent: 'center' }}>
+                  <ResultBadge result={m.pred} />
+                </div>
+
+                {/* Resultado real */}
+                <div style={{ display: 'flex', justifyContent: 'center' }}>
+                  <ResultBadge result={m.result} />
+                </div>
+
+                {/* Hit/Miss */}
+                <div style={{ display: 'flex', justifyContent: 'center' }}>
+                  <HitIcon hit={hit} />
+                </div>
+              </div>
+            );
+          })}
+
+          {/* Footer summary bar */}
+          <div style={{
+            padding: '12px 24px', borderTop: '1px solid rgba(255,255,255,0.05)',
+            display: 'flex', alignItems: 'center', gap: 20,
+            background: 'rgba(0,0,0,0.15)',
+          }}>
+            <div style={{ display: 'flex', gap: 6, flexWrap: 'wrap' }}>
+              {data.matches.map((m, i) => {
+                const hit = m.pred === m.result;
+                return (
+                  <div key={i} style={{
+                    width: 24, height: 24, borderRadius: 5,
+                    background: hit ? 'rgba(34,197,94,0.2)' : 'rgba(239,68,68,0.2)',
+                    border: `1px solid ${hit ? 'rgba(34,197,94,0.4)' : 'rgba(239,68,68,0.3)'}`,
+                    display: 'flex', alignItems: 'center', justifyContent: 'center',
+                    fontFamily: "'Space Grotesk',sans-serif", fontSize: 10, fontWeight: 700,
+                    color: hit ? '#4ade80' : '#f87171',
+                  }}>{m.result}</div>
+                );
+              })}
+            </div>
+            <div style={{ marginLeft: 'auto', fontSize: 12, color: '#64748b', fontFamily: "'Inter',sans-serif" }}>
+              {hits} aciertos de {total} · <span style={{ color: accColor, fontWeight: 600 }}>{accuracy}%</span>
+            </div>
+          </div>
+        </div>
+      )}
+    </div>
+  );
+};
+
+const ResultsScreen = () => {
+  const totalHits = RESULTS_DATA.reduce((acc, j) => acc + j.matches.filter(m => m.pred === m.result).length, 0);
+  const totalMatches = RESULTS_DATA.reduce((acc, j) => acc + j.matches.length, 0);
+  const avgAccuracy = Math.round((totalHits / totalMatches) * 100);
+
+  return (
+    <div className="slide-up">
+      {/* Page header */}
+      <div style={{ display: 'flex', alignItems: 'flex-start', justifyContent: 'space-between', marginBottom: 24, flexWrap: 'wrap', gap: 16 }}>
+        <div>
+          <h2 style={{ fontFamily: "'Space Grotesk',sans-serif", fontSize: 24, fontWeight: 700, color: '#f1f5f9' }}>
+            Resultados Recientes
+          </h2>
+          <p style={{ fontSize: 13, color: '#64748b', marginTop: 4, fontFamily: "'Inter',sans-serif" }}>
+            Marcadores reales vs predicciones del modelo · LaLiga
+          </p>
+        </div>
+        {/* Overall summary chips */}
+        <div style={{ display: 'flex', gap: 10, flexWrap: 'wrap' }}>
+          <div style={{ background: '#1E293B', border: '1px solid rgba(255,255,255,0.06)', borderRadius: 12, padding: '10px 18px', textAlign: 'center' }}>
+            <div style={{ fontFamily: "'Space Grotesk',sans-serif", fontSize: 22, fontWeight: 700, color: '#4ade80' }}>{totalHits}</div>
+            <div style={{ fontSize: 11, color: '#64748b', fontFamily: "'Inter',sans-serif", marginTop: 2 }}>Aciertos totales</div>
+          </div>
+          <div style={{ background: '#1E293B', border: '1px solid rgba(255,255,255,0.06)', borderRadius: 12, padding: '10px 18px', textAlign: 'center' }}>
+            <div style={{ fontFamily: "'Space Grotesk',sans-serif", fontSize: 22, fontWeight: 700, color: '#f87171' }}>{totalMatches - totalHits}</div>
+            <div style={{ fontSize: 11, color: '#64748b', fontFamily: "'Inter',sans-serif", marginTop: 2 }}>Fallos totales</div>
+          </div>
+          <div style={{ background: '#1E293B', border: '1px solid rgba(20,184,166,0.2)', borderTop: '3px solid #14B8A6', borderRadius: 12, padding: '10px 18px', textAlign: 'center' }}>
+            <div style={{ fontFamily: "'Space Grotesk',sans-serif", fontSize: 22, fontWeight: 700, color: '#14B8A6' }}>{avgAccuracy}%</div>
+            <div style={{ fontSize: 11, color: '#64748b', fontFamily: "'Inter',sans-serif", marginTop: 2 }}>Accuracy media</div>
+          </div>
+        </div>
+      </div>
+
+      {/* Legend */}
+      <div style={{ display: 'flex', gap: 16, marginBottom: 16, alignItems: 'center' }}>
+        <span style={{ fontSize: 11, color: '#475569', fontFamily: "'Inter',sans-serif" }}>Leyenda:</span>
+        <span style={{ display: 'flex', alignItems: 'center', gap: 5, fontSize: 12, color: '#4ade80', fontFamily: "'Inter',sans-serif" }}>
+          <i data-lucide="check-circle" width="13" height="13"></i> Predicción correcta
+        </span>
+        <span style={{ display: 'flex', alignItems: 'center', gap: 5, fontSize: 12, color: '#f87171', fontFamily: "'Inter',sans-serif" }}>
+          <i data-lucide="x-circle" width="13" height="13"></i> Predicción incorrecta
+        </span>
+        <span style={{ fontSize: 12, color: '#64748b', fontFamily: "'Inter',sans-serif" }}>· Haz clic en una jornada para expandir</span>
+      </div>
+
+      {/* Jornada cards */}
+      {RESULTS_DATA.map((jornada, i) => (
+        <JornadaResultCard key={jornada.jornada} data={jornada} defaultOpen={i === 0} />
+      ))}
+    </div>
+  );
+};
+
+// ──────────────────────────────────────
+//  HISTORY SCREEN
+// ──────────────────────────────────────
+const HISTORY_DATA = [
+  { jornada: 27, date: '27 Abr 2025', matches: 10, hits: 7, accuracy: 70, picks: '1·X·1·1·2·X·1·1·1·X' },
+  { jornada: 26, date: '20 Abr 2025', matches: 10, hits: 6, accuracy: 60, picks: '1·1·2·1·1·X·1·X·1·1' },
+  { jornada: 25, date: '13 Abr 2025', matches: 10, hits: 5, accuracy: 50, picks: '1·X·1·2·1·1·X·1·1·2' },
+  { jornada: 24, date: '6 Abr 2025',  matches: 10, hits: 4, accuracy: 40, picks: '1·1·1·X·2·1·1·X·1·1' },
+  { jornada: 23, date: '30 Mar 2025', matches: 10, hits: 6, accuracy: 60, picks: 'X·1·1·1·1·2·X·1·1·1' },
+];
+
+// ── Accuracy evolution SVG chart ──
+const AccuracyChart = ({ data }) => {
+  const W = 620, H = 180, PAD = { top: 20, right: 20, bottom: 36, left: 44 };
+  const innerW = W - PAD.left - PAD.right;
+  const innerH = H - PAD.top - PAD.bottom;
+
+  // reversed so oldest → newest left → right
+  const pts = [...data].reverse();
+  const minAcc = 30, maxAcc = 80;
+
+  const xOf = i => PAD.left + (i / (pts.length - 1)) * innerW;
+  const yOf = v => PAD.top + innerH - ((v - minAcc) / (maxAcc - minAcc)) * innerH;
+
+  const polyline = pts.map((r, i) => `${xOf(i)},${yOf(r.accuracy)}`).join(' ');
+  // area path
+  const areaPath = `M${xOf(0)},${yOf(pts[0].accuracy)} ` +
+    pts.slice(1).map((r, i) => `L${xOf(i+1)},${yOf(r.accuracy)}`).join(' ') +
+    ` L${xOf(pts.length-1)},${PAD.top + innerH} L${xOf(0)},${PAD.top + innerH} Z`;
+
+  // baseline 50%
+  const y50 = yOf(50);
+  // grid lines
+  const gridVals = [40, 50, 60, 70];
+
+  const [hovered, setHovered] = React.useState(null);
+
+  return (
+    <svg
+      width="100%" viewBox={`0 0 ${W} ${H}`}
+      style={{ display: 'block', overflow: 'visible' }}
+      onMouseLeave={() => setHovered(null)}
+    >
+      <defs>
+        <linearGradient id="chartGrad" x1="0" y1="0" x2="0" y2="1">
+          <stop offset="0%" stopColor="#14B8A6" stopOpacity="0.25"/>
+          <stop offset="100%" stopColor="#14B8A6" stopOpacity="0"/>
+        </linearGradient>
+        <linearGradient id="lineGrad" x1="0" y1="0" x2="1" y2="0">
+          <stop offset="0%" stopColor="#3B82F6"/>
+          <stop offset="100%" stopColor="#14B8A6"/>
+        </linearGradient>
+      </defs>
+
+      {/* Grid lines */}
+      {gridVals.map(v => (
+        <g key={v}>
+          <line
+            x1={PAD.left} y1={yOf(v)} x2={PAD.left + innerW} y2={yOf(v)}
+            stroke={v === 50 ? 'rgba(20,184,166,0.2)' : 'rgba(255,255,255,0.04)'}
+            strokeWidth={v === 50 ? 1.5 : 1}
+            strokeDasharray={v === 50 ? '4 4' : 'none'}
+          />
+          <text x={PAD.left - 8} y={yOf(v) + 4} textAnchor="end"
+            fontSize="10" fill="#475569" fontFamily="Inter,sans-serif">{v}%</text>
+        </g>
+      ))}
+
+      {/* 50% label */}
+      <text x={PAD.left + innerW + 6} y={y50 + 4} fontSize="10" fill="#14B8A6" fontFamily="Inter,sans-serif">objetivo</text>
+
+      {/* Area fill */}
+      <path d={areaPath} fill="url(#chartGrad)"/>
+
+      {/* Line */}
+      <polyline points={polyline} fill="none" stroke="url(#lineGrad)" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"/>
+
+      {/* Data points + hover */}
+      {pts.map((r, i) => {
+        const cx = xOf(i), cy = yOf(r.accuracy);
+        const isHov = hovered === i;
+        const dotColor = r.accuracy >= 60 ? '#4ade80' : r.accuracy >= 50 ? '#14B8A6' : '#f59e0b';
+        return (
+          <g key={i}
+            onMouseEnter={() => setHovered(i)}
+            style={{ cursor: 'default' }}
+          >
+            {/* Invisible larger hit area */}
+            <circle cx={cx} cy={cy} r={12} fill="transparent"/>
+            {/* Outer ring on hover */}
+            {isHov && <circle cx={cx} cy={cy} r={8} fill={dotColor} opacity={0.2}/>}
+            {/* Dot */}
+            <circle cx={cx} cy={cy} r={isHov ? 5.5 : 4}
+              fill={dotColor} stroke="#0f172a" strokeWidth="2"
+              style={{ transition: 'r 100ms' }}
+            />
+            {/* Tooltip */}
+            {isHov && (
+              <g>
+                <rect x={cx - 38} y={cy - 38} width={76} height={28} rx={6}
+                  fill="#263348" stroke="rgba(20,184,166,0.3)" strokeWidth="1"/>
+                <text x={cx} y={cy - 20} textAnchor="middle"
+                  fontSize="11" fontWeight="700" fill={dotColor} fontFamily="Space Grotesk,sans-serif">
+                  {r.accuracy}%
+                </text>
+                <text x={cx} y={cy - 10} textAnchor="middle"
+                  fontSize="9" fill="#94a3b8" fontFamily="Inter,sans-serif">
+                  J{r.jornada}
+                </text>
+              </g>
+            )}
+            {/* X axis label */}
+            <text x={cx} y={H - 6} textAnchor="middle"
+              fontSize="10" fill="#475569" fontFamily="Inter,sans-serif">J{r.jornada}</text>
+          </g>
+        );
+      })}
+    </svg>
+  );
+};
+
+const HistoryScreen = () => {
+  const avg = Math.round(HISTORY_DATA.reduce((s, r) => s + r.accuracy, 0) / HISTORY_DATA.length);
+  const best = Math.max(...HISTORY_DATA.map(r => r.accuracy));
+  const trend = HISTORY_DATA[0].accuracy - HISTORY_DATA[HISTORY_DATA.length - 1].accuracy;
+
+  return (
+    <div className="slide-up">
+      <div style={{ marginBottom: 24 }}>
+        <h2 style={{ fontFamily: "'Space Grotesk',sans-serif", fontSize: 24, fontWeight: 700, color: '#f1f5f9' }}>Historial de Predicciones</h2>
+        <p style={{ fontSize: 13, color: '#64748b', marginTop: 4 }}>Rendimiento del modelo en jornadas anteriores</p>
+      </div>
+
+      {/* Evolution chart card */}
+      <div style={{ background: '#1E293B', border: '1px solid rgba(255,255,255,0.06)', borderRadius: 16, marginBottom: 16, overflow: 'hidden' }}>
+        <div style={{ padding: '20px 24px', borderBottom: '1px solid rgba(255,255,255,0.06)', display: 'flex', alignItems: 'center', justifyContent: 'space-between', flexWrap: 'wrap', gap: 12 }}>
+          <div>
+            <div style={{ fontFamily: "'Space Grotesk',sans-serif", fontSize: 17, fontWeight: 700, color: '#f1f5f9' }}>Evolución de Accuracy</div>
+            <div style={{ fontSize: 12, color: '#64748b', marginTop: 2, fontFamily: "'Inter',sans-serif" }}>Últimas {HISTORY_DATA.length} jornadas · pasa el ratón sobre los puntos</div>
+          </div>
+          <div style={{ display: 'flex', gap: 16 }}>
+            {[
+              { label: 'Media', value: `${avg}%`, color: '#14B8A6' },
+              { label: 'Mejor', value: `${best}%`, color: '#4ade80' },
+              { label: 'Tendencia', value: (trend >= 0 ? '+' : '') + trend + '%', color: trend >= 0 ? '#4ade80' : '#f87171' },
+            ].map((s, i) => (
+              <div key={i} style={{ textAlign: 'center' }}>
+                <div style={{ fontFamily: "'Space Grotesk',sans-serif", fontSize: 18, fontWeight: 700, color: s.color }}>{s.value}</div>
+                <div style={{ fontSize: 10, color: '#64748b', fontFamily: "'Inter',sans-serif", textTransform: 'uppercase', letterSpacing: '0.06em' }}>{s.label}</div>
+              </div>
+            ))}
+          </div>
+        </div>
+        <div style={{ padding: '16px 24px 8px' }}>
+          <AccuracyChart data={HISTORY_DATA} />
+        </div>
+      </div>
+
+      {/* Table */}
+      <div style={{ background: '#1E293B', border: '1px solid rgba(255,255,255,0.06)', borderRadius: 16, overflow: 'hidden' }}>
+        <table style={{ width: '100%', borderCollapse: 'collapse' }}>
+          <thead>
+            <tr style={{ background: 'rgba(20,184,166,0.05)' }}>
+              {['Jornada','Fecha','Partidos','Aciertos','Accuracy','Picks'].map(h => (
+                <th key={h} style={{ padding: '11px 16px', textAlign: 'left', fontSize: 10, fontWeight: 700, letterSpacing: '0.1em', textTransform: 'uppercase', color: '#64748b', borderBottom: '1px solid rgba(255,255,255,0.06)', fontFamily: "'Inter',sans-serif" }}>{h}</th>
+              ))}
+            </tr>
+          </thead>
+          <tbody>
+            {HISTORY_DATA.map((row, i) => (
+              <tr key={i} style={{ borderBottom: '1px solid rgba(255,255,255,0.03)', background: i % 2 === 1 ? 'rgba(255,255,255,0.015)' : 'transparent' }}>
+                <td style={{ padding: '13px 16px', fontFamily: "'Space Grotesk',sans-serif", fontWeight: 700, fontSize: 15, color: '#f1f5f9' }}>J{row.jornada}</td>
+                <td style={{ padding: '13px 16px', fontSize: 12, color: '#94a3b8', fontFamily: "'Inter',sans-serif" }}>{row.date}</td>
+                <td style={{ padding: '13px 16px', fontSize: 13, color: '#f1f5f9', fontFamily: "'Inter',sans-serif" }}>{row.matches}</td>
+                <td style={{ padding: '13px 16px' }}>
+                  <span style={{ fontFamily: "'Space Grotesk',sans-serif", fontSize: 14, fontWeight: 700, color: row.hits >= 6 ? '#4ade80' : row.hits >= 5 ? '#fbbf24' : '#f87171' }}>
+                    {row.hits}/{row.matches}
+                  </span>
+                </td>
+                <td style={{ padding: '13px 16px' }}>
+                  <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
+                    <div style={{ flex: 1, height: 5, background: 'rgba(255,255,255,0.06)', borderRadius: 3, overflow: 'hidden', minWidth: 80 }}>
+                      <div style={{ height: '100%', width: `${row.accuracy}%`, background: row.accuracy >= 60 ? '#22c55e' : row.accuracy >= 50 ? '#14B8A6' : '#f59e0b', borderRadius: 3 }}></div>
+                    </div>
+                    <span style={{ fontSize: 12, fontWeight: 600, color: '#f1f5f9', fontFamily: "'Space Grotesk',sans-serif", width: 32 }}>{row.accuracy}%</span>
+                  </div>
+                </td>
+                <td style={{ padding: '13px 16px', fontFamily: "'JetBrains Mono',monospace", fontSize: 11, color: '#64748b', letterSpacing: '0.04em' }}>{row.picks}</td>
+              </tr>
+            ))}
+          </tbody>
+        </table>
+      </div>
+    </div>
+  );
+};
+
+// ──────────────────────────────────────
+//  SETTINGS SCREEN
+// ──────────────────────────────────────
+const SettingsScreen = () => {
+  const [apiKey, setApiKey] = React.useState('••••••••••••••••••••••••');
+  const [league, setLeague] = React.useState('PD');
+  const [jornadas, setJornadas] = React.useState(5);
+  const [autoRetrain, setAutoRetrain] = React.useState(true);
+  const [saved, setSaved] = React.useState(false);
+
+  const handleSave = () => {
+    setSaved(true);
+    setTimeout(() => setSaved(false), 2000);
+  };
+
+  return (
+    <div className="slide-up" style={{ maxWidth: 680 }}>
+      <div style={{ marginBottom: 28 }}>
+        <h2 style={{ fontFamily: "'Space Grotesk',sans-serif", fontSize: 24, fontWeight: 700, color: '#f1f5f9' }}>Ajustes</h2>
+        <p style={{ fontSize: 13, color: '#64748b', marginTop: 4 }}>Configura tu API key, liga y parámetros del modelo</p>
+      </div>
+
+      {[
+        {
+          title: 'API & Datos',
+          fields: [
+            { label: 'football-data.org API Key', type: 'password', value: apiKey, onChange: setApiKey, hint: 'Registra gratis en football-data.org/client/register' },
+            { label: 'Código de Liga', type: 'select', value: league, onChange: setLeague, options: [['PD','LaLiga (PD)'],['PL','Premier League (PL)'],['SA','Serie A (SA)'],['BL1','Bundesliga (BL1)']] },
+            { label: 'Jornadas históricas', type: 'number', value: jornadas, onChange: setJornadas, hint: 'Número de jornadas usadas para entrenamiento (1-10)' },
+          ]
+        },
+        {
+          title: 'Modelo ML',
+          fields: [
+            { label: 'Árboles (n_estimators)', type: 'number', value: 100, onChange: ()=>{}, hint: 'Más árboles = más potencia, más lento' },
+            { label: 'Profundidad máxima (max_depth)', type: 'number', value: 15, onChange: ()=>{}, hint: '10-20 recomendado' },
+          ]
+        }
+      ].map((section, si) => (
+        <div key={si} style={{ background: '#1E293B', border: '1px solid rgba(255,255,255,0.06)', borderRadius: 16, marginBottom: 16, overflow: 'hidden' }}>
+          <div style={{ padding: '16px 24px', borderBottom: '1px solid rgba(255,255,255,0.05)' }}>
+            <div style={{ fontFamily: "'Space Grotesk',sans-serif", fontSize: 15, fontWeight: 600, color: '#f1f5f9' }}>{section.title}</div>
+          </div>
+          <div style={{ padding: '20px 24px', display: 'flex', flexDirection: 'column', gap: 16 }}>
+            {section.fields.map((field, fi) => (
+              <div key={fi}>
+                <label style={{ fontSize: 12, fontWeight: 600, color: '#94a3b8', display: 'block', marginBottom: 6, fontFamily: "'Inter',sans-serif" }}>{field.label}</label>
+                {field.type === 'select' ? (
+                  <select value={field.value} onChange={e => field.onChange(e.target.value)} style={{ width: '100%', background: 'rgba(255,255,255,0.04)', border: '1px solid rgba(255,255,255,0.1)', borderRadius: 10, padding: '10px 14px', fontFamily: "'Inter',sans-serif", fontSize: 14, color: '#f1f5f9', outline: 'none', cursor: 'pointer' }}>
+                    {field.options.map(([v,l]) => <option key={v} value={v} style={{ background: '#1e293b' }}>{l}</option>)}
+                  </select>
+                ) : (
+                  <input
+                    type={field.type}
+                    value={field.value}
+                    onChange={e => field.onChange(e.target.value)}
+                    style={{ width: '100%', background: 'rgba(255,255,255,0.04)', border: '1px solid rgba(255,255,255,0.1)', borderRadius: 10, padding: '10px 14px', fontFamily: "'Inter',sans-serif", fontSize: 14, color: '#f1f5f9', outline: 'none' }}
+                  />
+                )}
+                {field.hint && <div style={{ fontSize: 11, color: '#475569', marginTop: 4, fontFamily: "'Inter',sans-serif" }}>{field.hint}</div>}
+              </div>
+            ))}
+          </div>
+        </div>
+      ))}
+
+      <div style={{ background: '#1E293B', border: '1px solid rgba(255,255,255,0.06)', borderRadius: 16, padding: '16px 24px', display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 16 }}>
+        <div>
+          <div style={{ fontSize: 14, fontWeight: 600, color: '#f1f5f9', fontFamily: "'Inter',sans-serif" }}>Re-entrenamiento automático</div>
+          <div style={{ fontSize: 12, color: '#64748b', marginTop: 2, fontFamily: "'Inter',sans-serif" }}>Reentrenar modelo cada vez que se carguen datos nuevos</div>
+        </div>
+        <div onClick={() => setAutoRetrain(!autoRetrain)} style={{ width: 44, height: 24, borderRadius: 12, background: autoRetrain ? '#14B8A6' : 'rgba(255,255,255,0.1)', position: 'relative', cursor: 'pointer', transition: 'background 200ms', flexShrink: 0 }}>
+          <div style={{ width: 18, height: 18, borderRadius: 9, background: 'white', position: 'absolute', top: 3, left: autoRetrain ? 23 : 3, transition: 'left 200ms cubic-bezier(0.16,1,0.3,1)' }}></div>
+        </div>
+      </div>
+
+      <button onClick={handleSave} style={{ display: 'flex', alignItems: 'center', gap: 8, padding: '11px 24px', background: saved ? '#22c55e' : '#14B8A6', color: '#0f172a', fontFamily: "'Inter',sans-serif", fontSize: 14, fontWeight: 600, border: 'none', borderRadius: 10, cursor: 'pointer', transition: 'background 200ms' }}>
+        <i data-lucide={saved ? 'check' : 'save'} width="16" height="16"></i>
+        {saved ? 'Guardado ✓' : 'Guardar cambios'}
+      </button>
+    </div>
+  );
+};
+
+// ──────────────────────────────────────
+//  STATUS BAR
+// ──────────────────────────────────────
+const StatusBar = ({ dataLoaded, modelTrained, predictionsReady }) => {
+  const steps = [
+    { label: 'Datos', done: dataLoaded, icon: 'download-cloud' },
+    { label: 'Modelo', done: modelTrained, icon: 'cpu' },
+    { label: 'Predicciones', done: predictionsReady, icon: 'sparkles' },
+  ];
+  return (
+    <div style={{ display: 'flex', alignItems: 'center', gap: 16, padding: '8px 16px', background: 'rgba(255,255,255,0.02)', borderRadius: 10, border: '1px solid rgba(255,255,255,0.05)', marginBottom: 24 }}>
+      {steps.map((step, i) => (
+        <React.Fragment key={i}>
+          <div style={{ display: 'flex', alignItems: 'center', gap: 6 }}>
+            <div className={step.done ? '' : 'blink'} style={{ width: 7, height: 7, borderRadius: '50%', background: step.done ? '#22c55e' : '#64748b' }}></div>
+            <i data-lucide={step.icon} width="13" height="13" style={{ color: step.done ? '#14B8A6' : '#475569' }}></i>
+            <span style={{ fontSize: 12, color: step.done ? '#94a3b8' : '#475569', fontFamily: "'Inter',sans-serif" }}>{step.label}</span>
+          </div>
+          {i < steps.length - 1 && <div style={{ height: 1, flex: 1, maxWidth: 32, background: 'rgba(255,255,255,0.06)' }}></div>}
+        </React.Fragment>
+      ))}
+      <div style={{ marginLeft: 'auto', display: 'flex', gap: 8 }}>
+        <span style={{ fontSize: 11, color: '#475569', fontFamily: "'Inter',sans-serif" }}>LaLiga · Jornada 28</span>
+        <span style={{ fontSize: 11, color: '#14B8A6', fontFamily: "'Inter',sans-serif" }}>● Activo</span>
+      </div>
+    </div>
+  );
+};
+
+// ──────────────────────────────────────
+//  HERO
+// ──────────────────────────────────────
+const Hero = ({ onAction }) => (
+  <div style={{
+    background: 'linear-gradient(135deg, rgba(20,184,166,0.08) 0%, rgba(59,130,246,0.05) 100%)',
+    border: '1px solid rgba(20,184,166,0.15)',
+    borderRadius: 20, padding: '32px 40px', marginBottom: 28,
+    display: 'flex', alignItems: 'center', justifyContent: 'space-between', flexWrap: 'wrap', gap: 20,
+  }}>
+    <div>
+      <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 8 }}>
+        <span style={{ fontSize: 11, fontWeight: 700, letterSpacing: '0.12em', textTransform: 'uppercase', color: '#14B8A6', fontFamily: "'Inter',sans-serif" }}>LaLiga · Jornada 28</span>
+        <span style={{ width: 4, height: 4, borderRadius: '50%', background: '#14B8A6', display: 'inline-block' }}></span>
+        <span style={{ fontSize: 11, color: '#64748b', fontFamily: "'Inter',sans-serif" }}>1 May 2025</span>
+      </div>
+      <h1 style={{ fontFamily: "'Space Grotesk',sans-serif", fontSize: 36, fontWeight: 700, letterSpacing: '-0.02em', color: '#f1f5f9', lineHeight: 1.15, marginBottom: 10 }}>
+        Predice la Próxima<br/>
+        <span style={{ background: 'linear-gradient(90deg,#14B8A6,#3B82F6)', WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent' }}>Jornada</span>
+      </h1>
+      <p style={{ fontSize: 15, color: '#94a3b8', fontFamily: "'Inter',sans-serif", maxWidth: 420, lineHeight: 1.5 }}>
+        Motor de predicción de LaLiga basado en inteligencia artificial y análisis de datos históricos.
+      </p>
+    </div>
+    <div style={{ display: 'flex', flexDirection: 'column', gap: 10, flexShrink: 0 }}>
+      {[
+        { label: 'Cargar Datos', icon: 'download-cloud', style: 'secondary' },
+        { label: 'Entrenar Modelo', icon: 'cpu', style: 'secondary' },
+        { label: 'Generar Quiniela', icon: 'sparkles', style: 'primary' },
+      ].map((btn, i) => (
+        <button key={i} onClick={() => onAction(btn.label)} style={{
+          display: 'flex', alignItems: 'center', gap: 8,
+          padding: '10px 20px', borderRadius: 10,
+          fontFamily: "'Inter',sans-serif", fontSize: 13, fontWeight: 600,
+          cursor: 'pointer', transition: 'all 150ms',
+          ...(btn.style === 'primary'
+            ? { background: '#14B8A6', color: '#0f172a', border: 'none' }
+            : { background: 'rgba(255,255,255,0.05)', color: '#f1f5f9', border: '1px solid rgba(255,255,255,0.1)' }
+          )
+        }}>
+          <i data-lucide={btn.icon} width="15" height="15"></i>
+          {btn.label}
+        </button>
+      ))}
+    </div>
+  </div>
+);
+
+// ──────────────────────────────────────
+//  TOAST
+// ──────────────────────────────────────
+const Toast = ({ message, type, onDismiss }) => {
+  const colors = { success: '#22c55e', info: '#14B8A6', warning: '#f59e0b' };
+  React.useEffect(() => {
+    const t = setTimeout(onDismiss, 3000);
+    return () => clearTimeout(t);
+  }, [message]);
+
+  return (
+    <div style={{
+      position: 'fixed', bottom: 24, right: 24, zIndex: 300,
+      display: 'flex', alignItems: 'center', gap: 10,
+      background: '#1E293B', border: `1px solid ${colors[type] || '#14B8A6'}40`,
+      borderRadius: 12, padding: '12px 16px',
+      boxShadow: '0 20px 60px rgba(0,0,0,0.5)',
+      fontFamily: "'Inter',sans-serif", fontSize: 13, color: '#f1f5f9',
+      animation: 'slideUp 200ms cubic-bezier(0.16,1,0.3,1)',
+    }}>
+      <div style={{ width: 7, height: 7, borderRadius: '50%', background: colors[type] || '#14B8A6', flexShrink: 0 }}></div>
+      {message}
+    </div>
+  );
+};
+
+// ──────────────────────────────────────
+//  APP ROOT
+// ──────────────────────────────────────
+const App = () => {
+  const [page, setPage] = React.useState('dashboard');
+  const [dataLoaded, setDataLoaded] = React.useState(true);
+  const [modelTrained, setModelTrained] = React.useState(true);
+  const [predictionsReady, setPredictionsReady] = React.useState(true);
+  const [toast, setToast] = React.useState(null);
+  const [loading, setLoading] = React.useState(false);
+
+  const showToast = (message, type = 'info') => setToast({ message, type });
+
+  const handleAction = (action) => {
+    setLoading(true);
+    setTimeout(() => {
+      setLoading(false);
+      if (action === 'Cargar Datos') { setDataLoaded(true); showToast('Datos cargados · 50 partidos (J23–J27)', 'success'); }
+      if (action === 'Entrenar Modelo') { setModelTrained(true); showToast('Modelo entrenado · Accuracy: 52%', 'success'); }
+      if (action === 'Generar Quiniela') { setPredictionsReady(true); showToast('Quiniela generada para Jornada 28', 'success'); }
+    }, 900);
+  };
+
+  React.useEffect(() => {
+    if (window.lucide) window.lucide.createIcons();
+  });
+
+  const renderPage = () => {
+    switch (page) {
+      case 'dashboard': return (
+        <div className="slide-up">
+          <Hero onAction={handleAction} />
+          <StatusBar dataLoaded={dataLoaded} modelTrained={modelTrained} predictionsReady={predictionsReady} />
+          <div style={{ marginBottom: 20 }}><KPICards /></div>
+          <div style={{ marginBottom: 20 }}><PredictionsTable /></div>
+          <div style={{ display: 'grid', gridTemplateColumns: '1fr 1.5fr', gap: 20, marginBottom: 20 }}>
+            <QuinielaSelector />
+            <ModelInsights />
+          </div>
+        </div>
+      );
+      case 'predictions': return (
+        <div className="slide-up">
+          <div style={{ marginBottom: 20 }}>
+            <h2 style={{ fontFamily: "'Space Grotesk',sans-serif", fontSize: 24, fontWeight: 700, color: '#f1f5f9' }}>Predicciones Jornada 28</h2>
+            <p style={{ fontSize: 13, color: '#64748b', marginTop: 4 }}>Probabilidades para cada partido · Random Forest · 52% accuracy</p>
+          </div>
+          <PredictionsTable />
+          <div style={{ marginTop: 20 }}>
+            <QuinielaSelector />
+          </div>
+        </div>
+      );
+      case 'results': return <ResultsScreen />;
+      case 'history': return <HistoryScreen />;
+      case 'settings': return <SettingsScreen />;
+      default: return null;
+    }
+  };
+
+  return (
+    <div>
+      <Header activePage={page} onNavigate={setPage} />
+      <main style={{ maxWidth: 1280, margin: '0 auto', padding: '28px 24px' }}>
+        {loading && (
+          <div style={{ position: 'fixed', top: 60, left: 0, right: 0, height: 2, background: 'linear-gradient(90deg,#14B8A6,#3B82F6)', zIndex: 200, animation: 'pulse 1s ease infinite' }}></div>
+        )}
+        {renderPage()}
+      </main>
+      {toast && <Toast message={toast.message} type={toast.type} onDismiss={() => setToast(null)} />}
+    </div>
+  );
+};
+
+const root = ReactDOM.createRoot(document.getElementById('root'));
+root.render(<App />);
+</script>
+</body>
+</html>
