@@ -2,6 +2,9 @@ import React, { useState, useEffect } from 'react'
 import ReactDOM from 'react-dom/client'
 import { Header } from './components/Header'
 import { KPICards } from './components/KPICards'
+import { PredictionsTable } from './components/PredictionsTable'
+import { QuinielaSelector } from './components/QuinielaSelector'
+import { ModelInsights } from './components/ModelInsights'
 import { apiClient } from './api/client'
 import './styles/tokens.css'
 
@@ -107,12 +110,16 @@ const PredictionsPage = () => {
   return (
     <div>
       <h1 style={styles.pageTitle}>Predicciones</h1>
+      <p style={styles.pageSubtitle}>
+        Análisis detallado de predicciones con probabilidades y confianza
+      </p>
+
       <div style={styles.section}>
-        <div style={styles.card}>
-          <p style={styles.cardText}>
-            Predicciones detalladas para la próxima jornada con probabilidades y confianza
-          </p>
-        </div>
+        <PredictionsTable jornada={28} />
+      </div>
+
+      <div style={styles.section}>
+        <QuinielaSelector />
       </div>
     </div>
   )
@@ -121,11 +128,13 @@ const PredictionsPage = () => {
 const ResultsPage = () => {
   return (
     <div>
-      <h1 style={styles.pageTitle}>Resultados</h1>
+      <h1 style={styles.pageTitle}>Resultados & Análisis</h1>
+      <p style={styles.pageSubtitle}>
+        Rendimiento del modelo con métricas detalladas
+      </p>
+
       <div style={styles.section}>
-        <div style={styles.card}>
-          <p style={styles.cardText}>Historial de resultados y aciertos del modelo</p>
-        </div>
+        <ModelInsights />
       </div>
     </div>
   )
