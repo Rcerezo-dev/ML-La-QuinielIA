@@ -1,4 +1,4 @@
-# 🤝 Contributing to ML-La-QuinielIA
+d# 🤝 Contributing to ML-La-QuinielIA
 
 ¡Gracias por tu interés en contribuir! Este documento te guía cómo ayudar.
 
