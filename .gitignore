@@ -1,0 +1,64 @@
+# Virtual Environment
+venv/
+env/
+ENV/
+.venv
+
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+.Python
+build/
+develop-eggs/
+dist/
+downloads/
+eggs/
+.eggs/
+lib/
+lib64/
+parts/
+sdist/
+var/
+wheels/
+*.egg-info/
+.installed.cfg
+*.egg
+
+# IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+.DS_Store
+
+# Data & Models (local)
+data/raw/
+data/processed/
+models/*.pkl
+models/metadata.pkl
+
+# Logs
+*.log
+logs/
+
+# Environment
+.env
+.env.local
+.env.*.local
+
+# Cache
+.pytest_cache/
+.cache/
+*.cache
+
+# OS
+Thumbs.db
+.DS_Store
+
+# Misc
+*.tmp
+*.bak
+.secrets/
