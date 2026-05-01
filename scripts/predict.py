@@ -51,31 +51,47 @@ def main():
 
     # 1. Descarga datos
     print("1️⃣  DESCARGANDO DATOS...")
-    print("   - Últimas 5 jornadas")
+    print("   - Últimos 20 partidos")
     print("   - Próxima jornada")
     print("   - Clasificación actual")
 
-    last_5, next_matchday, standings = scrape_all_data()
+    last_20, next_matchday, standings = scrape_all_data()
 
-    if last_5 is None or len(last_5) == 0:
+    if last_20 is None or len(last_20) == 0:
         print("\n❌ Error al descargar datos. Verifica tu API key en .env")
         return
 
     print(f"\n✅ Datos descargados:")
-    print(f"   - {len(last_5)} partidos históricos")
+    print(f"   - {len(last_20)} partidos históricos")
     print(f"   - {len(next_matchday) if next_matchday is not None else 0} partidos próxima jornada")
     print(f"   - {len(standings) if standings is not None else 0} equipos en clasificación")
 
     # 2. Entrenamiento
     print_header("2️⃣  ENTRENANDO MODELO")
-    print("   Algorithm: Random Forest (100 árboles)")
+    print("   Algorithm: Random Forest (100 árboles, max_depth=15)")
     print("   Train/Test: 80/20")
 
-    trainer, metrics = train_complete_model(last_5)
+    trainer, metrics = train_complete_model(last_20)
 
     print(f"\n✅ Modelo entrenado:")
-    print(f"   - Accuracy: {metrics['accuracy']:.2%}")
-    print(f"   - F1 Score: {metrics['f1_score']:.4f}")
+    print(f"   - Accuracy:  {metrics['accuracy']:.2%}")
+    print(f"   - F1 Score:  {metrics['f1_score']:.4f}")
+
+    # Confusion matrix
+    conf_matrix = metrics['confusion_matrix']
+    print(f"\n📊 Confusion Matrix:")
+    print(f"   {'':8s} {'Local(0)':>8s} {'Empate(1)':>10s} {'Visit(2)':>8s}")
+    print(f"   Local:   {conf_matrix[0][0]:8d} {conf_matrix[0][1]:10d} {conf_matrix[0][2]:8d}")
+    print(f"   Empate:  {conf_matrix[1][0]:8d} {conf_matrix[1][1]:10d} {conf_matrix[1][2]:8d}")
+    print(f"   Visit:   {conf_matrix[2][0]:8d} {conf_matrix[2][1]:10d} {conf_matrix[2][2]:8d}")
+
+    # Precision, recall, f1 por clase
+    report = metrics['report']
+    print(f"\n📈 Métricas por clase:")
+    print(f"   {'Clase':<12s} {'Precision':>10s} {'Recall':>10s} {'F1-Score':>10s}")
+    print(f"   Local:     {report['0']['precision']:10.3f} {report['0']['recall']:10.3f} {report['0']['f1-score']:10.3f}")
+    print(f"   Empate:    {report['1']['precision']:10.3f} {report['1']['recall']:10.3f} {report['1']['f1-score']:10.3f}")
+    print(f"   Visitante: {report['2']['precision']:10.3f} {report['2']['recall']:10.3f} {report['2']['f1-score']:10.3f}")
 
     # Features importantes
     print("\n📊 Top 5 Features:")
@@ -91,7 +107,7 @@ def main():
     print_header("3️⃣  GENERANDO PREDICCIONES")
     print(f"   Jornada próxima: {len(next_matchday)} partidos\n")
 
-    predictor = Predictor(trainer, last_5)
+    predictor = Predictor(trainer, last_20)
     predictions = predictor.predict_matchday(next_matchday)
 
     print_predictions(predictions)
