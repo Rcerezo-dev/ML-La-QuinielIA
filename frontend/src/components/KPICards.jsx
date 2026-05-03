@@ -73,7 +73,7 @@ export const KPICards = ({ stats }) => {
     {
       label: 'Partidos Predichos',
       value: s.matches,
-      delta: `Jornada ${s.jornada}`,
+      delta: typeof s.jornada === 'string' ? s.jornada : `Jornada ${s.jornada}`,
       deltaPositive: null,
       accent: '#F59E0B',
       icon: 'calendar',

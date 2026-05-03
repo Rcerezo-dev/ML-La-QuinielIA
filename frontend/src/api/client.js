@@ -40,6 +40,10 @@ class APIClient {
     return this.request('/data/next-matchday')
   }
 
+  async getMatchdays() {
+    return this.request('/data/matchdays')
+  }
+
   // Model endpoints
   async trainModel() {
     return this.request('/model/train', { method: 'POST' })
@@ -54,8 +58,9 @@ class APIClient {
   }
 
   // Predictions endpoints
-  async generatePredictions() {
-    return this.request('/predictions/generate', { method: 'POST' })
+  async generatePredictions(round) {
+    const qs = round != null ? `?round=${encodeURIComponent(round)}` : ''
+    return this.request(`/predictions/generate${qs}`, { method: 'POST' })
   }
 
   async getLatestPredictions() {
@@ -73,6 +78,15 @@ class APIClient {
   // Standings
   async getStandings() {
     return this.request('/standings')
+  }
+
+  // History
+  async getHistory() {
+    return this.request('/history')
+  }
+
+  async deleteHistoryEntry(round) {
+    return this.request(`/history/${round}`, { method: 'DELETE' })
   }
 
   // Health check

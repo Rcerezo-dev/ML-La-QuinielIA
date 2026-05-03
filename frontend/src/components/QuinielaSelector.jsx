@@ -2,29 +2,32 @@ import React, { useState } from 'react'
 
 const STRATEGIES = [
   {
-    id: 'balanced',
-    name: 'Conservadora',
-    description: 'Solo apuestas con >40% confianza',
+    id: 'conservadora',
+    name: 'Conservadora 🛡️',
+    description: 'Solo apuestas con confianza > 70% (seguras, pocas apuestas)',
     icon: '🛡️',
+    color: '#10b981',
   },
   {
-    id: 'aggressive',
-    name: 'Arriesgada',
-    description: 'Apuestas con >55% confianza',
+    id: 'arriesgada',
+    name: 'Arriesgada ⚡',
+    description: 'Apuestas con confianza > 45% (más atrevida, más apuestas)',
     icon: '⚡',
+    color: '#f59e0b',
   },
   {
-    id: 'high_confidence',
-    name: 'Alto Nivel',
-    description: 'Solo las más seguras (>60%)',
+    id: 'alto_nivel',
+    name: 'Alto Nivel 🎯',
+    description: 'Solo apuestas con confianza > 75% (muy selectiva)',
     icon: '🎯',
+    color: '#3b82f6',
   },
 ]
 
 const MOCK_QUINIELA = '1,X,1,2,1,X,1,1,1,X'
 
-export const QuinielaSelector = ({ onStrategyChange, quiniela }) => {
-  const [selectedStrategy, setSelectedStrategy] = useState('balanced')
+export const QuinielaSelector = ({ onStrategyChange, quiniela, stats }) => {
+  const [selectedStrategy, setSelectedStrategy] = useState('conservadora')
   const [copied, setCopied] = useState(false)
 
   const handleStrategyChange = (strategyId) => {
@@ -68,11 +71,33 @@ export const QuinielaSelector = ({ onStrategyChange, quiniela }) => {
       {/* Quiniela Output */}
       <div style={styles.card}>
         <div style={styles.cardHeader}>
-          <h3 style={styles.cardTitle}>Tu Quiniela</h3>
+          <div>
+            <h3 style={styles.cardTitle}>Tu Quiniela</h3>
+            <div style={styles.cardSubtitle}>
+              Estrategia: <strong>{STRATEGIES.find(s => s.id === selectedStrategy)?.name}</strong>
+            </div>
+          </div>
           <button style={styles.copyBtn} onClick={handleCopy}>
             {copied ? '✓ Copiado' : '📋 Copiar'}
           </button>
         </div>
+
+        {stats && (
+          <div style={styles.statsBox}>
+            <div style={styles.statItem}>
+              <span style={styles.statLabel}>Total partidos:</span>
+              <span style={styles.statValue}>{stats.total_partidos}</span>
+            </div>
+            <div style={styles.statItem}>
+              <span style={styles.statLabel}>Apuestas realizadas:</span>
+              <span style={styles.statValue}>{stats.apuestas_realizadas}</span>
+            </div>
+            <div style={styles.statItem}>
+              <span style={styles.statLabel}>Confianza promedio:</span>
+              <span style={styles.statValue}>{stats.confidence_promedio?.toFixed(0)}%</span>
+            </div>
+          </div>
+        )}
 
         {/* Quiniela Tickets */}
         <div style={styles.ticketsContainer}>
@@ -86,10 +111,12 @@ export const QuinielaSelector = ({ onStrategyChange, quiniela }) => {
                     ? { background: 'rgba(20,184,166,0.15)', color: '#2dd4bf' }
                     : bet === 'X'
                       ? { background: 'rgba(245,158,11,0.15)', color: '#fbbf24' }
-                      : { background: 'rgba(59,130,246,0.15)', color: '#60a5fa' }),
+                      : bet === '2'
+                        ? { background: 'rgba(59,130,246,0.15)', color: '#60a5fa' }
+                        : { background: 'rgba(255,255,255,0.05)', color: '#94a3b8' }),
                 }}
               >
-                {bet}
+                {bet || '-'}
               </div>
             </div>
           ))}
@@ -115,7 +142,17 @@ export const QuinielaSelector = ({ onStrategyChange, quiniela }) => {
 
         {/* Disclaimer */}
         <div style={styles.disclaimer}>
-          ℹ️ <strong>Nota:</strong> Las predicciones son probabilísticas. No garantizan resultados reales.
+          <div style={{ marginBottom: 8 }}>
+            ℹ️ <strong>Estrategias explicadas:</strong>
+          </div>
+          <div style={{ fontSize: 11, lineHeight: 1.6, color: '#bfdbfe' }}>
+            • <strong>Conservadora:</strong> Apuesta solo en partidos muy seguros (confianza &gt; 70%). Menos apuestas, mayor seguridad.<br/>
+            • <strong>Arriesgada:</strong> Apuesta en más partidos (confianza &gt; 45%). Mayor riesgo, más variedad.<br/>
+            • <strong>Alto Nivel:</strong> Las predicciones más seguras (confianza &gt; 75%). Muy selectiva.
+          </div>
+          <div style={{ marginTop: 8, paddingTop: 8, borderTop: '1px solid rgba(93,164,255,0.2)', fontSize: 11 }}>
+            Las predicciones son probabilísticas. No garantizan resultados reales.
+          </div>
         </div>
       </div>
     </div>
@@ -186,6 +223,38 @@ const styles = {
     fontWeight: 700,
     color: '#f1f5f9',
     margin: 0,
+  },
+  cardSubtitle: {
+    fontSize: 12,
+    color: '#94a3b8',
+    marginTop: 4,
+  },
+  statsBox: {
+    display: 'flex',
+    gap: 16,
+    padding: 12,
+    background: 'rgba(20,184,166,0.05)',
+    border: '1px solid rgba(20,184,166,0.1)',
+    borderRadius: 8,
+    marginBottom: 16,
+  },
+  statItem: {
+    display: 'flex',
+    gap: 8,
+    alignItems: 'center',
+    flex: 1,
+  },
+  statLabel: {
+    fontSize: 11,
+    color: '#64748b',
+    fontWeight: 600,
+    textTransform: 'uppercase',
+    letterSpacing: '0.05em',
+  },
+  statValue: {
+    fontSize: 13,
+    fontWeight: 700,
+    color: '#2dd4bf',
   },
   copyBtn: {
     padding: '8px 16px',

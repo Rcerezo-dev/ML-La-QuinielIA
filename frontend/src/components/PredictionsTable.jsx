@@ -70,17 +70,35 @@ const MOCK_PREDICTIONS = [
   { home: 'Cádiz CF', away: 'Granada CF', p1: 35, px: 32, p2: 33, pick: 'X', conf: 35 },
 ]
 
-export const PredictionsTable = ({ predictions, jornada }) => {
+export const PredictionsTable = ({ predictions, jornada, dateRange }) => {
   const [hoveredRow, setHoveredRow] = useState(null)
+  const [hoveredHeader, setHoveredHeader] = useState(null)
   const data = predictions || MOCK_PREDICTIONS
+
+  const columnHelp = {
+    partido: 'Equipos enfrentados',
+    p1: 'Probabilidad de victoria local',
+    px: 'Probabilidad de empate',
+    p2: 'Probabilidad de victoria visitante',
+    pick: 'Predicción del modelo (resultado más probable)',
+    conf: 'Confianza en la predicción (0-100%)',
+  }
+
+  const getSubtitle = () => {
+    const parts = [`Jornada ${jornada || 28}`]
+    if (dateRange) parts.push(dateRange)
+    parts.push('LaLiga')
+    parts.push(`${data.length} partidos`)
+    return parts.join(' · ')
+  }
 
   return (
     <div style={tableStyles.wrap}>
       <div style={tableStyles.header}>
         <div>
-          <div style={tableStyles.title}>Próxima Jornada</div>
+          <div style={tableStyles.title}>Predicciones</div>
           <div style={tableStyles.subtitle}>
-            Jornada {jornada || 28} · LaLiga · {data.length} partidos
+            {getSubtitle()}
           </div>
         </div>
         <div style={{ display: 'flex', gap: 8 }}>
@@ -88,16 +106,63 @@ export const PredictionsTable = ({ predictions, jornada }) => {
           <span style={tableStyles.tag}>80/20 split</span>
         </div>
       </div>
+
+      <div style={tableStyles.legend}>
+        <div style={tableStyles.legendTitle}>📊 Leyenda:</div>
+        <div style={tableStyles.legendItems}>
+          <span style={tableStyles.legendItem}><strong>P(1)</strong> = Victoria Local</span>
+          <span style={tableStyles.legendItem}><strong>P(X)</strong> = Empate</span>
+          <span style={tableStyles.legendItem}><strong>P(2)</strong> = Victoria Visitante</span>
+          <span style={tableStyles.legendItem}><strong>Pick</strong> = Predicción más probable</span>
+          <span style={tableStyles.legendItem}><strong>Conf.</strong> = Confianza (mayor % = más seguro)</span>
+        </div>
+      </div>
+
       <div style={{ overflowX: 'auto' }}>
         <table style={tableStyles.table}>
           <thead>
             <tr style={tableStyles.thead}>
               <th style={{ ...tableStyles.th, width: 220 }}>Partido</th>
-              <th style={tableStyles.th}>P(1)</th>
-              <th style={tableStyles.th}>P(X)</th>
-              <th style={tableStyles.th}>P(2)</th>
-              <th style={tableStyles.th}>Pick</th>
-              <th style={tableStyles.th}>Conf.</th>
+              <th
+                style={tableStyles.th}
+                onMouseEnter={() => setHoveredHeader('p1')}
+                onMouseLeave={() => setHoveredHeader(null)}
+                title={columnHelp.p1}
+              >
+                P(1) ℹ️
+              </th>
+              <th
+                style={tableStyles.th}
+                onMouseEnter={() => setHoveredHeader('px')}
+                onMouseLeave={() => setHoveredHeader(null)}
+                title={columnHelp.px}
+              >
+                P(X) ℹ️
+              </th>
+              <th
+                style={tableStyles.th}
+                onMouseEnter={() => setHoveredHeader('p2')}
+                onMouseLeave={() => setHoveredHeader(null)}
+                title={columnHelp.p2}
+              >
+                P(2) ℹ️
+              </th>
+              <th
+                style={tableStyles.th}
+                onMouseEnter={() => setHoveredHeader('pick')}
+                onMouseLeave={() => setHoveredHeader(null)}
+                title={columnHelp.pick}
+              >
+                Pick ℹ️
+              </th>
+              <th
+                style={tableStyles.th}
+                onMouseEnter={() => setHoveredHeader('conf')}
+                onMouseLeave={() => setHoveredHeader(null)}
+                title={columnHelp.conf}
+              >
+                Conf. ℹ️
+              </th>
             </tr>
           </thead>
           <tbody>
@@ -155,6 +220,28 @@ const tableStyles = {
     justifyContent: 'space-between',
     padding: '20px 24px',
     borderBottom: '1px solid rgba(255,255,255,0.06)',
+  },
+  legend: {
+    padding: '12px 24px',
+    background: 'rgba(20,184,166,0.05)',
+    borderBottom: '1px solid rgba(20,184,166,0.1)',
+  },
+  legendTitle: {
+    fontSize: 12,
+    fontWeight: 600,
+    color: '#2dd4bf',
+    marginBottom: 8,
+  },
+  legendItems: {
+    display: 'flex',
+    flexWrap: 'wrap',
+    gap: 16,
+    fontSize: 12,
+    color: '#94a3b8',
+  },
+  legendItem: {
+    display: 'flex',
+    alignItems: 'center',
   },
   title: {
     fontFamily: "'Space Grotesk', sans-serif",

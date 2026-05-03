@@ -5,6 +5,8 @@ import { KPICards } from './components/KPICards'
 import { PredictionsTable } from './components/PredictionsTable'
 import { QuinielaSelector } from './components/QuinielaSelector'
 import { ModelInsights } from './components/ModelInsights'
+import { MatchdaySelector } from './components/MatchdaySelector'
+import { HistoryView } from './components/HistoryView'
 import { apiClient } from './api/client'
 import './styles/tokens.css'
 
@@ -13,6 +15,10 @@ const Dashboard = () => {
   const [data, setData] = useState(null)
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState(null)
+  const [predictions, setPredictions] = useState(null)
+  const [selectedMatchday, setSelectedMatchday] = useState(null)
+  const [dataLoaded, setDataLoaded] = useState(false)
+  const [modelTrained, setModelTrained] = useState(false)
 
   useEffect(() => {
     loadInitialData()
@@ -44,11 +50,21 @@ const Dashboard = () => {
           )}
 
           {activePage === 'dashboard' && (
-            <DashboardPage loading={loading} />
+            <DashboardPage
+              loading={loading}
+              predictions={predictions}
+              setPredictions={setPredictions}
+              selectedMatchday={selectedMatchday}
+              setSelectedMatchday={setSelectedMatchday}
+              dataLoaded={dataLoaded}
+              setDataLoaded={setDataLoaded}
+              modelTrained={modelTrained}
+              setModelTrained={setModelTrained}
+            />
           )}
 
           {activePage === 'predictions' && (
-            <PredictionsPage />
+            <PredictionsPage predictions={predictions} selectedMatchday={selectedMatchday} />
           )}
 
           {activePage === 'results' && (
@@ -68,54 +84,175 @@ const Dashboard = () => {
   )
 }
 
-const DashboardPage = ({ loading }) => {
+const DashboardPage = ({
+  loading,
+  predictions,
+  setPredictions,
+  selectedMatchday,
+  setSelectedMatchday,
+  dataLoaded,
+  setDataLoaded,
+  modelTrained,
+  setModelTrained,
+}) => {
+  const [generatingPredictions, setGeneratingPredictions] = useState(false)
+  const [showSelector, setShowSelector] = useState(false)
+
+  const handleGeneratePredictions = async () => {
+    setGeneratingPredictions(true)
+    try {
+      // 1. Load data first
+      if (!dataLoaded) {
+        console.log('Cargando datos...')
+        await apiClient.loadData()
+        setDataLoaded(true)
+      }
+      setShowSelector(true)
+    } catch (err) {
+      console.error('❌ Error cargando datos:', err)
+      alert('Error al cargar datos: ' + err.message)
+    }
+    setGeneratingPredictions(false)
+  }
+
+  const handleSelectMatchday = async (matchday) => {
+    setGeneratingPredictions(true)
+    setShowSelector(false)
+    try {
+      // 1. Load data
+      if (!dataLoaded) {
+        console.log('Cargando datos...')
+        await apiClient.loadData()
+        setDataLoaded(true)
+      }
+
+      // 2. Train model
+      if (!modelTrained) {
+        console.log('Entrenando modelo...')
+        await apiClient.trainModel()
+        setModelTrained(true)
+      }
+
+      // 3. Generate predictions for the selected round
+      console.log(`Generando predicciones para jornada ${matchday.round}...`)
+      const result = await apiClient.generatePredictions(matchday.round)
+
+      // Transform API response to component format
+      const transformedPredictions = result.predictions.map(pred => ({
+        home: pred.home_team,
+        away: pred.away_team,
+        p1: Math.round(pred.prob_local * 100),
+        px: Math.round(pred.prob_draw * 100),
+        p2: Math.round(pred.prob_away * 100),
+        pick: pred.prediction,
+        conf: Math.round(pred.confidence * 100),
+      }))
+
+      setPredictions(transformedPredictions)
+      setSelectedMatchday(matchday)
+      console.log('✅ Predicciones generadas', transformedPredictions)
+    } catch (err) {
+      console.error('❌ Error generando predicciones:', err)
+      alert('Error: ' + err.message)
+    }
+    setGeneratingPredictions(false)
+  }
+
   return (
     <div>
+      {showSelector && (
+        <MatchdaySelector
+          onSelect={handleSelectMatchday}
+          onClose={() => setShowSelector(false)}
+        />
+      )}
+
       <h1 style={styles.pageTitle}>Dashboard</h1>
       <p style={styles.pageSubtitle}>
         Visualización general del modelo ML y próximas predicciones
       </p>
 
-      <div style={styles.section}>
-        <KPICards
-          stats={{
-            accuracy: 58,
-            accuracyDelta: '+5%',
-            matches: 20,
-            jornada: 28,
-            confidence: 72,
-            confidenceLevel: 'Alto',
-            hits: 11,
-            hitsTotal: 20,
-          }}
-        />
-      </div>
+      {selectedMatchday && (
+        <div style={styles.section}>
+          <KPICards
+            stats={{
+              accuracy: 58,
+              accuracyDelta: '+5%',
+              matches: selectedMatchday.total || 0,
+              jornada: `Jornada ${selectedMatchday.round}${selectedMatchday.dateRange ? ` · ${selectedMatchday.dateRange}` : ''}`,
+              confidence: 72,
+              confidenceLevel: 'Alto',
+              hits: 11,
+              hitsTotal: 20,
+            }}
+          />
+        </div>
+      )}
 
       <div style={styles.section}>
         <div style={styles.card}>
-          <h2 style={styles.cardTitle}>Próximas Predicciones</h2>
+          <h2 style={styles.cardTitle}>Predicciones</h2>
           <p style={styles.cardText}>
-            Carga datos y entrena el modelo para ver las predicciones de la próxima jornada
+            {generatingPredictions
+              ? '⏳ Cargando datos, entrenando modelo y generando predicciones...'
+              : predictions && selectedMatchday
+              ? `✅ Predicciones generadas para Jornada ${selectedMatchday.round}`
+              : 'Selecciona una jornada y genera predicciones'}
           </p>
-          <button className="lq-btn-primary" style={{ marginTop: 16 }}>
-            Generar Predicciones
+          <button
+            className="lq-btn-primary"
+            style={{ marginTop: 16 }}
+            onClick={handleGeneratePredictions}
+            disabled={generatingPredictions}
+          >
+            {generatingPredictions ? 'Generando...' : 'Generar Predicciones'}
           </button>
         </div>
       </div>
+
+      {predictions && selectedMatchday && (
+        <div style={styles.section}>
+          <PredictionsTable
+            predictions={predictions}
+            jornada={selectedMatchday.round}
+            dateRange={selectedMatchday.dateRange}
+          />
+        </div>
+      )}
     </div>
   )
 }
 
-const PredictionsPage = () => {
+const PredictionsPage = ({ predictions, selectedMatchday }) => {
+  if (!predictions || !selectedMatchday) {
+    return (
+      <div>
+        <h1 style={styles.pageTitle}>Predicciones</h1>
+        <p style={styles.pageSubtitle}>
+          Análisis detallado de predicciones con probabilidades y confianza
+        </p>
+        <div style={styles.section}>
+          <div style={styles.card}>
+            <p style={styles.cardText}>
+              Primero genera predicciones en el Dashboard seleccionando una jornada
+            </p>
+          </div>
+        </div>
+      </div>
+    )
+  }
+
+  const title = `Jornada ${selectedMatchday.round}${selectedMatchday.dateRange ? ` · ${selectedMatchday.dateRange}` : ''}`
+
   return (
     <div>
-      <h1 style={styles.pageTitle}>Predicciones</h1>
+      <h1 style={styles.pageTitle}>Predicciones - {title}</h1>
       <p style={styles.pageSubtitle}>
         Análisis detallado de predicciones con probabilidades y confianza
       </p>
 
       <div style={styles.section}>
-        <PredictionsTable jornada={28} />
+        <PredictionsTable predictions={predictions} jornada={selectedMatchday.round} dateRange={selectedMatchday.dateRange} />
       </div>
 
       <div style={styles.section}>
@@ -144,10 +281,11 @@ const HistoryPage = () => {
   return (
     <div>
       <h1 style={styles.pageTitle}>Historial</h1>
+      <p style={styles.pageSubtitle}>
+        Quinielas guardadas con sus predicciones y aciertos según los resultados reales
+      </p>
       <div style={styles.section}>
-        <div style={styles.card}>
-          <p style={styles.cardText}>Historial completo de jornadas predichas</p>
-        </div>
+        <HistoryView />
       </div>
     </div>
   )
