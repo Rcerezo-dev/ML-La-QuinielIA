@@ -1,0 +1,236 @@
+{
+  "entries": [
+    {
+      "round": 34,
+      "predicted_at": "2026-05-02T17:38:25.560256",
+      "predictions": [
+        {
+          "home_team": "Girona FC",
+          "away_team": "RCD Mallorca",
+          "date": "2026-05-01T19:00:00+00:00",
+          "round": 34,
+          "prediction": "2",
+          "prob_local": 0.2933333333333333,
+          "prob_draw": 0.17657142857142857,
+          "prob_away": 0.5300952380952382,
+          "confidence": 0.5300952380952382
+        },
+        {
+          "home_team": "Villarreal CF",
+          "away_team": "Levante UD",
+          "date": "2026-05-02T12:00:00+00:00",
+          "round": 34,
+          "prediction": "1",
+          "prob_local": 0.6202380952380954,
+          "prob_draw": 0.2750238095238095,
+          "prob_away": 0.10473809523809524,
+          "confidence": 0.6202380952380954
+        },
+        {
+          "home_team": "Valencia CF",
+          "away_team": "Club Atlético de Madrid",
+          "date": "2026-05-02T14:15:00+00:00",
+          "round": 34,
+          "prediction": "2",
+          "prob_local": 0.3080238095238095,
+          "prob_draw": 0.2298095238095238,
+          "prob_away": 0.46216666666666656,
+          "confidence": 0.46216666666666656
+        },
+        {
+          "home_team": "Deportivo Alavés",
+          "away_team": "Athletic Club",
+          "date": "2026-05-02T16:30:00+00:00",
+          "round": 34,
+          "prediction": "X",
+          "prob_local": 0.32954365079365083,
+          "prob_draw": 0.510455266955267,
+          "prob_away": 0.16000108225108228,
+          "confidence": 0.510455266955267
+        },
+        {
+          "home_team": "CA Osasuna",
+          "away_team": "FC Barcelona",
+          "date": "2026-05-02T19:00:00+00:00",
+          "round": 34,
+          "prediction": "2",
+          "prob_local": 0.3794206349206349,
+          "prob_draw": 0.14665873015873018,
+          "prob_away": 0.4739206349206349,
+          "confidence": 0.4739206349206349
+        },
+        {
+          "home_team": "RC Celta de Vigo",
+          "away_team": "Elche CF",
+          "date": "2026-05-03T12:00:00+00:00",
+          "round": 34,
+          "prediction": "1",
+          "prob_local": 0.46792857142857147,
+          "prob_draw": 0.35899999999999993,
+          "prob_away": 0.17307142857142854,
+          "confidence": 0.46792857142857147
+        },
+        {
+          "home_team": "Getafe CF",
+          "away_team": "Rayo Vallecano de Madrid",
+          "date": "2026-05-03T14:15:00+00:00",
+          "round": 34,
+          "prediction": "2",
+          "prob_local": 0.3174126984126984,
+          "prob_draw": 0.1413823953823954,
+          "prob_away": 0.5412049062049061,
+          "confidence": 0.5412049062049061
+        },
+        {
+          "home_team": "Real Betis Balompié",
+          "away_team": "Real Oviedo",
+          "date": "2026-05-03T16:30:00+00:00",
+          "round": 34,
+          "prediction": "1",
+          "prob_local": 0.5156111111111111,
+          "prob_draw": 0.35374206349206355,
+          "prob_away": 0.13064682539682537,
+          "confidence": 0.5156111111111111
+        },
+        {
+          "home_team": "RCD Espanyol de Barcelona",
+          "away_team": "Real Madrid CF",
+          "date": "2026-05-03T19:00:00+00:00",
+          "round": 34,
+          "prediction": "1",
+          "prob_local": 0.4215,
+          "prob_draw": 0.23004761904761903,
+          "prob_away": 0.34845238095238096,
+          "confidence": 0.4215
+        },
+        {
+          "home_team": "Sevilla FC",
+          "away_team": "Real Sociedad de Fútbol",
+          "date": "2026-05-04T19:00:00+00:00",
+          "round": 34,
+          "prediction": "1",
+          "prob_local": 0.39458333333333334,
+          "prob_draw": 0.3453571428571429,
+          "prob_away": 0.26005952380952385,
+          "confidence": 0.39458333333333334
+        }
+      ]
+    },
+    {
+      "round": 35,
+      "predicted_at": "2026-05-02T17:35:54.038227",
+      "predictions": [
+        {
+          "home_team": "Levante UD",
+          "away_team": "CA Osasuna",
+          "date": "2026-05-08T19:00:00+00:00",
+          "round": 35,
+          "prediction": "1",
+          "prob_local": 0.3844166666666667,
+          "prob_draw": 0.25205844155844154,
+          "prob_away": 0.36352489177489183,
+          "confidence": 0.3844166666666667
+        },
+        {
+          "home_team": "Elche CF",
+          "away_team": "Deportivo Alavés",
+          "date": "2026-05-09T12:00:00+00:00",
+          "round": 35,
+          "prediction": "1",
+          "prob_local": 0.4263769841269841,
+          "prob_draw": 0.36314285714285716,
+          "prob_away": 0.2104801587301587,
+          "confidence": 0.4263769841269841
+        },
+        {
+          "home_team": "Sevilla FC",
+          "away_team": "RCD Espanyol de Barcelona",
+          "date": "2026-05-09T14:15:00+00:00",
+          "round": 35,
+          "prediction": "1",
+          "prob_local": 0.45148809523809524,
+          "prob_draw": 0.1913174603174603,
+          "prob_away": 0.35719444444444454,
+          "confidence": 0.45148809523809524
+        },
+        {
+          "home_team": "Club Atlético de Madrid",
+          "away_team": "RC Celta de Vigo",
+          "date": "2026-05-09T16:30:00+00:00",
+          "round": 35,
+          "prediction": "1",
+          "prob_local": 0.6131190476190476,
+          "prob_draw": 0.2131666666666667,
+          "prob_away": 0.17371428571428565,
+          "confidence": 0.6131190476190476
+        },
+        {
+          "home_team": "Real Sociedad de Fútbol",
+          "away_team": "Real Betis Balompié",
+          "date": "2026-05-09T19:00:00+00:00",
+          "round": 35,
+          "prediction": "1",
+          "prob_local": 0.5280992063492063,
+          "prob_draw": 0.3095119047619047,
+          "prob_away": 0.16238888888888886,
+          "confidence": 0.5280992063492063
+        },
+        {
+          "home_team": "RCD Mallorca",
+          "away_team": "Villarreal CF",
+          "date": "2026-05-10T12:00:00+00:00",
+          "round": 35,
+          "prediction": "2",
+          "prob_local": 0.17395238095238091,
+          "prob_draw": 0.3152619047619048,
+          "prob_away": 0.5107857142857143,
+          "confidence": 0.5107857142857143
+        },
+        {
+          "home_team": "Athletic Club",
+          "away_team": "Valencia CF",
+          "date": "2026-05-10T14:15:00+00:00",
+          "round": 35,
+          "prediction": "X",
+          "prob_local": 0.3134047619047619,
+          "prob_draw": 0.44838492063492075,
+          "prob_away": 0.2382103174603174,
+          "confidence": 0.44838492063492075
+        },
+        {
+          "home_team": "Real Oviedo",
+          "away_team": "Getafe CF",
+          "date": "2026-05-10T16:30:00+00:00",
+          "round": 35,
+          "prediction": "1",
+          "prob_local": 0.5543571428571428,
+          "prob_draw": 0.28678571428571425,
+          "prob_away": 0.15885714285714286,
+          "confidence": 0.5543571428571428
+        },
+        {
+          "home_team": "FC Barcelona",
+          "away_team": "Real Madrid CF",
+          "date": "2026-05-10T19:00:00+00:00",
+          "round": 35,
+          "prediction": "1",
+          "prob_local": 0.7677373737373736,
+          "prob_draw": 0.017595238095238094,
+          "prob_away": 0.21466738816738817,
+          "confidence": 0.7677373737373736
+        },
+        {
+          "home_team": "Rayo Vallecano de Madrid",
+          "away_team": "Girona FC",
+          "date": "2026-05-11T19:00:00+00:00",
+          "round": 35,
+          "prediction": "X",
+          "prob_local": 0.41671428571428587,
+          "prob_draw": 0.43214574314574317,
+          "prob_away": 0.15113997113997113,
+          "confidence": 0.43214574314574317
+        }
+      ]
+    }
+  ]
+}

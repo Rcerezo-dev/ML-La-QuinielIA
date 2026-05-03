@@ -1,0 +1,11 @@
+id,date,round,home_team,away_team,home_goals,away_goals,status
+1,2026-05-02T19:00:00Z,38,Real Madrid CF,FC Barcelona,-999,-999,SCHEDULED
+2,2026-05-02T21:00:00Z,38,Club Atlético de Madrid,Sevilla FC,-999,-999,SCHEDULED
+3,2026-05-03T16:00:00Z,38,Valencia CF,Real Betis Balompié,-999,-999,SCHEDULED
+4,2026-05-03T18:15:00Z,38,Athletic Club,Villarreal CF,-999,-999,SCHEDULED
+5,2026-05-03T20:30:00Z,38,Real Sociedad de Fútbol,CA Osasuna,-999,-999,SCHEDULED
+6,2026-05-04T12:00:00Z,38,RC Celta de Vigo,Rayo Vallecano de Madrid,-999,-999,SCHEDULED
+7,2026-05-04T14:15:00Z,38,Girona FC,Getafe CF,-999,-999,SCHEDULED
+8,2026-05-04T16:30:00Z,38,Levante UD,Deportivo Alavés,-999,-999,SCHEDULED
+9,2026-05-04T18:45:00Z,38,RCD Mallorca,RCD Espanyol de Barcelona,-999,-999,SCHEDULED
+10,2026-05-04T21:00:00Z,38,Real Oviedo,Elche CF,-999,-999,SCHEDULED

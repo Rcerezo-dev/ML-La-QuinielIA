@@ -62,3 +62,13 @@ Thumbs.db
 *.tmp
 *.bak
 .secrets/
+
+# Node / Frontend
+node_modules/
+frontend/node_modules/
+
+# Claude Code
+.claude/
+
+# Archivos accidentales
+/8

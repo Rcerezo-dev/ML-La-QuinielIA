@@ -1,0 +1,13 @@
+{
+  "name": "quiniela",
+  "version": "1.0.0",
+  "description": "La QuinielIA - Football Predictions",
+  "scripts": {
+    "backend": "python api.py",
+    "frontend": "cd frontend && npm run dev",
+    "dev": "concurrently \"npm run backend\" \"npm run frontend\""
+  },
+  "devDependencies": {
+    "concurrently": "^9.2.1"
+  }
+}
