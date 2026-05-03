@@ -53,6 +53,10 @@ class FeatureEngineer:
             goals_for = match["home_goals"] if is_home else match["away_goals"]
             goals_against = match["away_goals"] if is_home else match["home_goals"]
 
+            # Solo cuenta si el partido tiene resultado (no None)
+            if goals_for is None or goals_against is None:
+                continue
+
             stats["goals_for"] += goals_for
             stats["goals_against"] += goals_against
 
@@ -180,17 +184,25 @@ class FeatureEngineer:
     def create_training_dataset(self, matches_df: pd.DataFrame) -> tuple:
         """Crea dataset de entrenamiento con features y targets."""
 
-        features_df, feature_cols = self.create_features_for_matches(matches_df)
+        # Filtra solo partidos con resultados (sin None/NaN en goals)
+        valid_matches = matches_df[
+            (matches_df["home_goals"].notna()) &
+            (matches_df["away_goals"].notna())
+        ].copy()
+
+        if len(valid_matches) == 0:
+            raise ValueError("No hay partidos con resultados válidos para entrenar")
+
+        features_df, feature_cols = self.create_features_for_matches(valid_matches)
 
         # Crea target
-        targets = matches_df["home_goals"].values
         targets = np.array(
             [
                 self.categorize_result(
-                    matches_df.iloc[i]["home_goals"],
-                    matches_df.iloc[i]["away_goals"],
+                    int(valid_matches.iloc[i]["home_goals"]),
+                    int(valid_matches.iloc[i]["away_goals"]),
                 )
-                for i in range(len(matches_df))
+                for i in range(len(valid_matches))
             ]
         )
 

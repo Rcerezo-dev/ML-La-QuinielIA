@@ -41,6 +41,11 @@ class ModelTrainer:
         y debe tener valores: 0 (local gana), 1 (empate), 2 (visitante gana)
         """
 
+        # Analiza distribución de clases
+        unique, counts = np.unique(y, return_counts=True)
+        class_dist = dict(zip(unique, counts))
+        logger.info(f"Distribución de clases: Local={class_dist.get(0, 0)}, Empate={class_dist.get(1, 0)}, Visitante={class_dist.get(2, 0)}")
+
         # Split
         X_train, X_test, y_train, y_test = train_test_split(
             X, y, test_size=test_size, random_state=RANDOM_STATE, stratify=y

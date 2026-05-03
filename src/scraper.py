@@ -60,14 +60,14 @@ class LaLigaScraper:
             logger.error(f"Error obteniendo clasificación: {e}")
             return None
 
-    def get_matches(self, status: str = "FINISHED") -> Optional[pd.DataFrame]:
+    def get_matches(self, status: Optional[str] = "FINISHED") -> Optional[pd.DataFrame]:
         """
         Obtiene partidos de LaLiga.
-        status: FINISHED, SCHEDULED, LIVE, etc.
+        status: FINISHED, SCHEDULED, TIMED, POSTPONED, etc. Si es None, devuelve todos.
         """
         try:
             url = f"{self.base_url}/competitions/{self.league_code}/matches"
-            params = {"status": status}
+            params = {"status": status} if status else {}
 
             response = requests.get(
                 url, headers=self.headers, params=params, timeout=10
@@ -82,7 +82,7 @@ class LaLigaScraper:
                     {
                         "id": match["id"],
                         "date": match["utcDate"],
-                        "round": match.get("season", {}).get("currentMatchday", "Unknown"),
+                        "round": match.get("matchday", match.get("season", {}).get("currentMatchday", "Unknown")),
                         "home_team": match["homeTeam"]["name"],
                         "away_team": match["awayTeam"]["name"],
                         "home_goals": match["score"]["fullTime"]["home"],
@@ -147,25 +147,38 @@ class LaLigaScraper:
             return None
 
     def get_next_matchday(self) -> Optional[pd.DataFrame]:
-        """Obtiene próxima jornada pendiente."""
+        """Obtiene próxima jornada pendiente (que no haya empezado aún)."""
         try:
             matches = self.get_matches(status="SCHEDULED")
             if matches is None or len(matches) == 0:
-                logger.warning("No hay jornadas próximas programadas")
-                return None
+                logger.warning("No hay jornadas próximas programadas en API, usando datos locales")
+                return self.load_data("next_matchday.csv")
 
             matches = matches.sort_values("date")
 
-            # Obtiene próxima jornada única
-            next_round = matches["round"].min()
-            next_matchday = matches[matches["round"] == next_round]
+            # Filtra partidos que aún no han empezado (futuro)
+            from datetime import datetime, timezone
+            now = datetime.now(timezone.utc)
+            future_matches = matches[pd.to_datetime(matches["date"], utc=True) > now]
 
-            logger.info(f"Próxima jornada encontrada: Jornada {next_round}")
+            if len(future_matches) == 0:
+                logger.warning("No hay partidos en futuro, usando datos locales")
+                return self.load_data("next_matchday.csv")
+
+            # Obtiene la próxima jornada (primera sin jugar)
+            next_round = future_matches["round"].min()
+            next_matchday = future_matches[future_matches["round"] == next_round]
+
+            if len(next_matchday) == 0:
+                logger.warning("API retornó jornada vacía, usando datos locales")
+                return self.load_data("next_matchday.csv")
+
+            logger.info(f"Próxima jornada encontrada: Jornada {next_round} ({len(next_matchday)} partidos futuros)")
             return next_matchday.sort_values("date")
 
         except Exception as e:
-            logger.error(f"Error obteniendo próxima jornada: {e}")
-            return None
+            logger.error(f"Error obteniendo próxima jornada: {e}, usando datos locales")
+            return self.load_data("next_matchday.csv")
 
     def save_data(self, df: pd.DataFrame, filename: str) -> None:
         """Guarda dataframe en CSV."""
@@ -186,24 +199,72 @@ class LaLigaScraper:
             return None
 
 
-def scrape_all_data() -> Tuple[Optional[pd.DataFrame], Optional[pd.DataFrame], Optional[pd.DataFrame]]:
+def scrape_all_data() -> Tuple[Optional[pd.DataFrame], Optional[pd.DataFrame], Optional[pd.DataFrame], Optional[pd.DataFrame]]:
     """
     Función principal para obtener todos los datos necesarios.
-    Retorna: (últimos 20 partidos, próxima jornada, clasificación)
+    Retorna: (FINISHED para entrenar, TODOS los partidos, próxima jornada, clasificación)
     """
     scraper = LaLigaScraper()
 
-    # Obtiene datos
-    last_20 = scraper.get_last_n_matches(n=20)
+    # Obtiene partidos completados (para entrenar)
+    finished = scraper.get_matches(status="FINISHED")
+    if finished is None or len(finished) == 0:
+        logger.warning("No hay partidos completados, usando últimos 20")
+        finished = scraper.get_last_n_matches(n=20)
+        if finished is None:
+            logger.error("No se pudieron obtener partidos")
+            return None, None, None, None
+
+    finished = finished.sort_values("date")
+    logger.info(f"Partidos completados obtenidos: {len(finished)} partidos")
+
+    # Calendario COMPLETO: pide sin filtro de status para incluir TIMED, POSTPONED, etc.
+    # (las últimas jornadas de LaLiga suelen estar en TIMED hasta que LaLiga publica los horarios)
+    full = scraper.get_matches(status=None)
+
+    if full is not None and len(full) > 0:
+        all_calendar = (
+            pd.concat([finished, full], ignore_index=True)
+            .drop_duplicates(subset=["id"])
+            .sort_values("date")
+        )
+    else:
+        # Fallback: al menos completados + programados
+        scheduled = scraper.get_matches(status="SCHEDULED")
+        parts = [finished]
+        if scheduled is not None and len(scheduled) > 0:
+            parts.append(scheduled)
+        all_calendar = (
+            pd.concat(parts, ignore_index=True)
+            .drop_duplicates(subset=["id"])
+            .sort_values("date")
+            if len(parts) > 1 else finished.copy()
+        )
+
+    # Diagnóstico: cuenta partidos por jornada para detectar jornadas incompletas
+    try:
+        rounds_count = (
+            pd.to_numeric(all_calendar["round"], errors="coerce")
+            .fillna(0).astype(int).value_counts().sort_index()
+        )
+        incomplete = rounds_count[rounds_count != 10]
+        if len(incomplete) > 0:
+            logger.warning(f"Jornadas con != 10 partidos: {incomplete.to_dict()}")
+    except Exception:
+        pass
+
+    logger.info(f"Calendario completo: {len(all_calendar)} partidos")
+
+    # Próxima jornada (de partidos SCHEDULED)
     next_matchday = scraper.get_next_matchday()
     standings = scraper.get_standings()
 
     # Guarda
-    if last_20 is not None:
-        scraper.save_data(last_20, "last_20_matches.csv")
+    scraper.save_data(finished, "historical_matches.csv")
+    scraper.save_data(all_calendar, "all_matches.csv")
     if next_matchday is not None:
         scraper.save_data(next_matchday, "next_matchday.csv")
     if standings is not None:
         scraper.save_data(standings, "standings.csv")
 
-    return last_20, next_matchday, standings
+    return finished, all_calendar, next_matchday, standings

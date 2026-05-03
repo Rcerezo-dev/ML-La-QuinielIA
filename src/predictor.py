@@ -76,7 +76,16 @@ class Predictor:
             predictions.append(pred)
 
         pred_df = pd.DataFrame(predictions)
+
+        # Estadísticas de predicciones
+        draws_predicted = (pred_df["prediction"] == "X").sum()
+        home_predicted = (pred_df["prediction"] == "1").sum()
+        away_predicted = (pred_df["prediction"] == "2").sum()
+        avg_draw_prob = pred_df["prob_draw"].mean()
+
         logger.info(f"Predicciones generadas para {len(pred_df)} partidos")
+        logger.info(f"Resumen: Local={home_predicted}, Empate={draws_predicted}, Visitante={away_predicted}")
+        logger.info(f"Probabilidad promedio de empate: {avg_draw_prob:.3f}")
 
         return pred_df
 
@@ -85,33 +94,36 @@ class Predictor:
     ) -> pd.DataFrame:
         """
         Genera quiniela (apuestas) basada en predicciones.
-        strategy: 'balanced' (conservadora), 'aggressive' (arriesgada), 'high_confidence'
+        strategy:
+        - 'conservadora': Solo apuesta cuando confianza > 70% (apuestas seguras)
+        - 'arriesgada': Apuesta cuando confianza > 45% (más atrevida)
+        - 'alto_nivel': Solo apuesta cuando confianza > 75% (muy conservadora)
         """
 
         quiniela = predictions_df.copy()
 
-        if strategy == "balanced":
-            # Selecciona predicción más probable si supera umbral
+        if strategy == "conservadora":
+            # Solo apuesta partidos seguros (confianza > 70%)
             quiniela["bet"] = quiniela.apply(
                 lambda row: (
                     row["prediction"]
-                    if row["confidence"] > 0.4
-                    else "1"  # Por defecto local si no hay seguridad
+                    if row["confidence"] > 0.70
+                    else None  # Sin apuesta si no está seguro
                 ),
                 axis=1,
             )
 
-        elif strategy == "aggressive":
-            # Solo apuesta cuando hay confianza muy alta
+        elif strategy == "arriesgada":
+            # Apuesta con menos confianza (> 45%)
             quiniela["bet"] = quiniela.apply(
-                lambda row: row["prediction"] if row["confidence"] > 0.55 else "1",
+                lambda row: row["prediction"] if row["confidence"] > 0.45 else None,
                 axis=1,
             )
 
-        elif strategy == "high_confidence":
-            # Busca los más seguros solamente
+        elif strategy == "alto_nivel":
+            # Solo los más seguros (confianza > 75%)
             quiniela["bet"] = quiniela.apply(
-                lambda row: row["prediction"] if row["confidence"] > 0.6 else "1",
+                lambda row: row["prediction"] if row["confidence"] > 0.75 else None,
                 axis=1,
             )
 
@@ -135,6 +147,46 @@ class Predictor:
         )
 
         return display_df
+
+    def group_by_weekend(self, predictions_df: pd.DataFrame) -> Dict:
+        """
+        Agrupa predicciones por fin de semana (viernes a domingo).
+        Retorna dict con estructura: {fecha_weekend: [partidos]}
+        """
+        predictions_df = predictions_df.copy()
+        predictions_df["date"] = pd.to_datetime(predictions_df.get("date", pd.Series([None] * len(predictions_df))))
+
+        # Si no hay fecha, agrupa por jornada
+        if predictions_df["date"].isna().all():
+            grouped = {}
+            for _, row in predictions_df.iterrows():
+                round_num = row.get("round", 1)
+                if round_num not in grouped:
+                    grouped[round_num] = []
+                grouped[round_num].append(row)
+            return grouped
+
+        # Agrupa por fin de semana
+        weekends = {}
+        for _, match in predictions_df.iterrows():
+            date = match["date"]
+            if pd.isna(date):
+                continue
+
+            # Calcula el viernes anterior (para agrupar viernes, sábado, domingo)
+            day_of_week = date.weekday()  # 0=lunes, 4=viernes, 5=sábado, 6=domingo
+            if day_of_week < 4:  # lunes a jueves
+                friday = date - pd.Timedelta(days=day_of_week + 3)
+            else:  # viernes a domingo
+                friday = date - pd.Timedelta(days=day_of_week - 4)
+
+            friday_str = friday.strftime("%Y-%m-%d")
+
+            if friday_str not in weekends:
+                weekends[friday_str] = []
+            weekends[friday_str].append(match.to_dict())
+
+        return weekends
 
     def calculate_expected_value(
         self, predictions_df: pd.DataFrame, odds_dict: Dict = None
